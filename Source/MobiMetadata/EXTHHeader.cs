@@ -8,14 +8,19 @@ namespace MobiMetadata
         private readonly byte[] headerLength = new byte[4];
         private readonly byte[] recordCount = new byte[4];
 
-        private readonly EXTHRecord[] recordList;
+        private EXTHRecord[] recordList;
 
         public EXTHHead()
         {
             recordList = Array.Empty<EXTHRecord>();
         }
 
-        public EXTHHead(Stream stream)
+        public EXTHHead(params Attr[] attrsToRead)
+        {
+            SetAttrsToRead(attrsToRead);
+        }
+
+        public override void ReadHeader(Stream stream)
         {
             stream.Read(identifier, 0, identifier.Length);
 

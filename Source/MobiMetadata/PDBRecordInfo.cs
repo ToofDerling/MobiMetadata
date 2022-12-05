@@ -6,11 +6,18 @@
         private readonly byte recordAttributes = 0;
         private readonly byte[] uniqueID = new byte[3];
 
-        public PDBRecordInfo(Stream stream)
+        public PDBRecordInfo(Stream stream, bool readRecordInfo)
         {
-            stream.Read(recordDataOffset, 0, recordDataOffset.Length);
-            recordAttributes = (byte)stream.ReadByte();
-            stream.Read(uniqueID, 0, uniqueID.Length);
+            if (readRecordInfo)
+            {
+                stream.Read(recordDataOffset, 0, recordDataOffset.Length);
+                recordAttributes = (byte)stream.ReadByte();
+                stream.Read(uniqueID, 0, uniqueID.Length);
+            }
+            else
+            {
+                stream.Position += 8;
+            }
         }
 
         public uint RecordDataOffset => Converter.ToUInt32(recordDataOffset);

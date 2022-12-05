@@ -2,32 +2,38 @@
 {
     public class PalmDOCHead : BaseHeader
     {
-        private readonly byte[] compression = new byte[2];
-        private readonly byte[] unused0 = new byte[2];
-        private readonly byte[] textLength = new byte[4];
-        private readonly byte[] recordCount = new byte[2];
-        private readonly byte[] recordSize = new byte[2];
-        private readonly byte[] encryptionType = new byte[2];
-        private readonly byte[] unused1 = new byte[2];
+        public readonly Attr CompressionAttr = new(2);
+
+        public readonly Attr Unused0Attr = new(2);
+        
+        public readonly Attr TextLengthAttr = new(4);
+        
+        public readonly Attr RecordCountAttr = new(2);
+        
+        public readonly Attr RecordSizeAttr = new(2);
+        
+        public readonly Attr EncryptionTypeAttr = new(2);
+        
+        public readonly Attr Unused1Attr = new(2);
 
         public long Position { get; private set; }
 
-        public PalmDOCHead(Stream stream)
+        public override void ReadHeader(Stream stream)
         {
             Position = stream.Position;
 
-            stream.Read(compression, 0, compression.Length);
-            stream.Read(unused0, 0, unused0.Length);
-            stream.Read(textLength, 0, textLength.Length);
-            stream.Read(recordCount, 0, recordCount.Length);
+            ReadOrSkip(stream, CompressionAttr);
+            Skip(stream, Unused0Attr);
+            ReadOrSkip(stream, TextLengthAttr);
+            ReadOrSkip(stream, RecordCountAttr);
 
-            stream.Read(recordSize, 0, recordSize.Length);
-            stream.Read(encryptionType, 0, encryptionType.Length);
-            stream.Read(unused1, 0, unused1.Length);
+            ReadOrSkip(stream, RecordSizeAttr);
+            ReadOrSkip(stream, EncryptionTypeAttr);
+            Skip(stream, Unused1Attr);
         }
 
         //Properties
-        public ushort Compression => Converter.ToUInt16(compression);
+        public ushort Compression => Converter.ToUInt16(CompressionAttr.Data);
 
         public string CompressionAsString => Compression switch
         {
@@ -37,13 +43,13 @@
             _ => $"Unknown (0)",
         };
 
-        public uint TextLength => Converter.ToUInt32(textLength);
+        public uint TextLength => Converter.ToUInt32(TextLengthAttr.Data);
 
-        public ushort RecordCount => Converter.ToUInt16(recordCount);
+        public ushort RecordCount => Converter.ToUInt16(RecordCountAttr.Data);
 
-        public ushort RecordSize => Converter.ToUInt16(recordSize);
+        public ushort RecordSize => Converter.ToUInt16(RecordSizeAttr.Data);
 
-        public ushort EncryptionType => Converter.ToUInt16(encryptionType);
+        public ushort EncryptionType => Converter.ToUInt16(EncryptionTypeAttr.Data);
 
         public string EncryptionTypeAsString
         {
