@@ -16,7 +16,7 @@
 
         public PageRecords? PageRecordsHD { get; private set; }
 
-        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null, 
+        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
             EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
         {
             _pdbHeader = pdbHeader ?? new PDBHead();
@@ -56,7 +56,7 @@
         public void ReadHDImageRecords(Stream hdContainerStream)
         {
             var pdbHeader = new PDBHead();
-
+            
             pdbHeader.SetAttrsToRead(pdbHeader.TypeAttr, pdbHeader.CreatorAttr, pdbHeader.NumRecordsAttr);
             pdbHeader.ReadHeader(hdContainerStream);
 
