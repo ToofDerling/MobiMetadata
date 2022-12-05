@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using AzwConverter;
+using System.Text;
 
 namespace MobiMetadata
 {
@@ -201,7 +202,7 @@ namespace MobiMetadata
 
         internal void SetExthHeader(EXTHHead exthHeader)
         {
-            ExthHeader = exthHeader ?? new EXTHHead();
+            ExthHeader = exthHeader ?? MobiHeaderFactory.CreateReadAll<EXTHHead>();
         }
 
         public EXTHHead ExthHeader { get; private set; }

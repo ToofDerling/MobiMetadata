@@ -1,4 +1,6 @@
-﻿namespace MobiMetadata
+﻿using AzwConverter;
+
+namespace MobiMetadata
 {
     public class MobiMetadata
     {
@@ -19,13 +21,13 @@
         public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
             EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
         {
-            _pdbHeader = pdbHeader ?? new PDBHead();
+            _pdbHeader = pdbHeader ?? MobiHeaderFactory.CreateReadAll<PDBHead>();
             _pdbHeader.ReadHeader(stream);
 
-            _palmDocHeader = palmDocHeader ?? new PalmDOCHead();
+            _palmDocHeader = palmDocHeader ?? MobiHeaderFactory.CreateReadAll<PalmDOCHead>();
             _palmDocHeader.ReadHeader(stream);
 
-            _mobiHeader = mobiHeader ?? new MobiHead();
+            _mobiHeader = mobiHeader ?? MobiHeaderFactory.CreateReadAll<MobiHead>();
 
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
             _mobiHeader.SetExthHeader(exthHeader);
@@ -55,9 +57,10 @@
 
         public void ReadHDImageRecords(Stream hdContainerStream)
         {
-            var pdbHeader = new PDBHead();
+            var pdbHeader = MobiHeaderFactory.CreateReadAll<PDBHead>();
+            MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr, 
+                pdbHeader.NumRecordsAttr);
             
-            pdbHeader.SetAttrsToRead(pdbHeader.TypeAttr, pdbHeader.CreatorAttr, pdbHeader.NumRecordsAttr);
             pdbHeader.ReadHeader(hdContainerStream);
 
             if (!pdbHeader.IsHDImageContainer)
