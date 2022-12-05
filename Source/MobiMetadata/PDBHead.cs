@@ -40,7 +40,7 @@ namespace MobiMetadata
 
         public PDBRecordInfo[] Records => _recordInfoList;
 
-        public override void ReadHeader(Stream stream)
+        internal override void ReadHeader(Stream stream)
         {
             ReadOrSkip(stream, NameAttr);
             ReadOrSkip(stream, AttributesAttr);

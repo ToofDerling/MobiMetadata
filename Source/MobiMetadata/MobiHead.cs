@@ -94,7 +94,7 @@ namespace MobiMetadata
 
         internal long PreviousHeaderPosition { get; set; }
 
-        public override void ReadHeader(Stream stream)
+        internal override void ReadHeader(Stream stream)
         {
             var mobiHeaderOffset = stream.Position;
 

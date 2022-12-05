@@ -56,7 +56,7 @@
             stream.Position += attr.Length;
         }
 
-        public void SetAttrsToRead(params Attr[] attrs)
+        internal void SetAttrsToRead(params Attr[] attrs)
         {
             attrsToRead = new Dictionary<Attr, object>();
 
@@ -69,8 +69,10 @@
             }
         }
 
+        internal bool IsReadAll => attrsToRead == null;
+
         protected bool IsAttrToRead(Attr attr) => attrsToRead == null || attrsToRead.ContainsKey(attr);
 
-        public abstract void ReadHeader(Stream stream);
+        internal abstract void ReadHeader(Stream stream);
     }
 }

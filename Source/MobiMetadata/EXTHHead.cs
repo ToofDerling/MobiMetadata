@@ -66,7 +66,7 @@ namespace MobiMetadata
 
         private EXTHRecord[] _recordList;
 
-        public override void ReadHeader(Stream stream)
+        internal override void ReadHeader(Stream stream)
         {
             Read(stream, IdentifierAttr);
 

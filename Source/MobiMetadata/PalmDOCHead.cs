@@ -18,7 +18,7 @@
 
         public long Position { get; private set; }
 
-        public override void ReadHeader(Stream stream)
+        internal override void ReadHeader(Stream stream)
         {
             Position = stream.Position;
 
