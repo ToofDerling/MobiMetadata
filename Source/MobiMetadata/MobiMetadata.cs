@@ -5,19 +5,18 @@
         private readonly PDBHead _pdbHeader;
         private readonly PalmDOCHead _palmDocHeader;
         private readonly MobiHead _mobiHeader;
-        private readonly PageRecords pageRecords;
 
-        public PDBHead PDBHeader => _pdbHeader;
+        public PDBHead PdbHeader => _pdbHeader;
 
         public PalmDOCHead PalmDocHeader => _palmDocHeader;
 
         public MobiHead MobiHeader => _mobiHeader;
 
-        public PageRecords PageRecords => pageRecords;
+        public PageRecords PageRecords { get; private set; }
 
         public PageRecords? PageRecordsHD { get; private set; }
 
-        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null, bool throwIfNoExthHeader = false)
+        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null, EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
         {
             _pdbHeader = pdbHeader ?? new PDBHead();
             _pdbHeader.ReadHeader(stream);
@@ -26,26 +25,30 @@
             _palmDocHeader.ReadHeader(stream);
 
             _mobiHeader = mobiHeader ?? new MobiHead();
+
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
+            _mobiHeader.SetExthHeader(exthHeader);
+
+            // This also reads the exthheader
             _mobiHeader.ReadHeader(stream);
 
-            if (_mobiHeader.EXTHHeader.IsEmpty)
+            if (_mobiHeader.ExthHeader == null)
             {
                 if (throwIfNoExthHeader)
                 {
                     throw new MobiMetadataException($"{mobiHeader.FullName}: No EXTHHeader");
                 }
             }
-            else if (!_pdbHeader.RecordInfoIsEmpty) 
+            else if (!_pdbHeader.RecordInfoIsEmpty)
             {
-                var coverIndexOffset = _mobiHeader.EXTHHeader.CoverOffset;
-                var thumbIndexOffset = _mobiHeader.EXTHHeader.ThumbOffset;
+                var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
+                var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
 
-                pageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
+                PageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
                     _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
                     coverIndexOffset, thumbIndexOffset);
 
-                pageRecords.AnalyzePageRecords();
+                PageRecords.AnalyzePageRecords();
             }
         }
 
@@ -63,7 +66,7 @@
 
             PageRecordsHD = new PageRecords(hdContainerStream, pdbHeader.Records, ImageType.HD,
                 1, (ushort)(pdbHeader.Records.Length - 1),
-                MobiHeader.EXTHHeader.CoverOffset, MobiHeader.EXTHHeader.ThumbOffset);
+                MobiHeader.ExthHeader.CoverOffset, MobiHeader.ExthHeader.ThumbOffset);
 
             PageRecordsHD.AnalyzePageRecordsHD(PageRecords.ContentRecords.Count);
         }

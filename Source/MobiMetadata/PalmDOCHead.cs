@@ -1,6 +1,6 @@
 ﻿namespace MobiMetadata
 {
-    public class PalmDOCHead : BaseHeader
+    public class PalmDOCHead : BaseHead
     {
         public readonly Attr CompressionAttr = new(2);
 

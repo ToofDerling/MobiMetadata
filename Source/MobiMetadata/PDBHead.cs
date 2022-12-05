@@ -2,7 +2,7 @@
 
 namespace MobiMetadata
 {
-    public class PDBHead : BaseHeader
+    public class PDBHead : BaseHead
     {
         public readonly Attr NameAttr = new(32);
 
@@ -32,11 +32,13 @@ namespace MobiMetadata
 
         public readonly Attr NumRecordsAttr = new(2);
 
-        private PDBRecordInfo[] recordInfoList;
+        private readonly Attr GapToDataAttr = new(2);
+
+        private PDBRecordInfo[] _recordInfoList;
 
         public bool RecordInfoIsEmpty { get; set; }
 
-        private readonly Attr GapToDataAttr = new(2);
+        public PDBRecordInfo[] Records => _recordInfoList;
 
         public override void ReadHeader(Stream stream)
         {
@@ -61,10 +63,10 @@ namespace MobiMetadata
             var readRecordInfo = IsAttrToRead(NumRecordsAttr);
             RecordInfoIsEmpty = !readRecordInfo;
 
-            recordInfoList = new PDBRecordInfo[recordCount];
+            _recordInfoList = new PDBRecordInfo[recordCount];
             for (int i = 0; i < recordCount; i++)
             {
-                recordInfoList[i] = new PDBRecordInfo(stream, readRecordInfo);
+                _recordInfoList[i] = new PDBRecordInfo(stream, readRecordInfo);
             }
 
             Skip(stream, GapToDataAttr);
@@ -104,9 +106,8 @@ namespace MobiMetadata
 
         public ushort GapToData => Converter.ToUInt16(GapToDataAttr.Data);
 
-        public uint MobiHeaderSize => recordInfoList.Length > 1
-                                        ? recordInfoList[1].RecordDataOffset - recordInfoList[0].RecordDataOffset
+        public uint MobiHeaderSize => _recordInfoList.Length > 1
+                                        ? _recordInfoList[1].RecordDataOffset - _recordInfoList[0].RecordDataOffset
                                         : 0;
-        public PDBRecordInfo[] Records => recordInfoList;
     }
 }

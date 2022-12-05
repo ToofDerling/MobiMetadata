@@ -1,6 +1,6 @@
 ﻿namespace MobiMetadata
 {
-    public abstract class BaseHeader
+    public abstract class BaseHead
     {
         public sealed class Attr
         {
@@ -9,12 +9,29 @@
                 Length = length;
             }
 
+            public Attr(int length, int exthRecType) : this(length)
+            {
+                ExthRecType = exthRecType;
+            }
+
             public byte[]? Data { get; set; }
 
             public int Length { get; private set; }
+
+            public int ExthRecType { get; private set; }
         }
 
         private Dictionary<Attr, object>? attrsToRead;
+
+        protected Dictionary<int, object> GetExthRecordTypesToRead()
+        {
+            if (attrsToRead == null)
+            {
+                return null;
+            }
+
+            return attrsToRead.ToDictionary(x => x.Key.ExthRecType, x => (object)null);
+        }
 
         protected void ReadOrSkip(Stream stream, Attr attr)
         {
@@ -35,7 +52,7 @@
         }
 
         protected void Skip(Stream stream, Attr attr)
-        { 
+        {
             stream.Position += attr.Length;
         }
 
@@ -52,7 +69,7 @@
             }
         }
 
-        public bool IsAttrToRead(Attr attr) => attrsToRead == null || attrsToRead.ContainsKey(attr);
+        protected bool IsAttrToRead(Attr attr) => attrsToRead == null || attrsToRead.ContainsKey(attr);
 
         public abstract void ReadHeader(Stream stream);
     }

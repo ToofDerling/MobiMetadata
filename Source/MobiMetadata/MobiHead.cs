@@ -2,9 +2,9 @@
 
 namespace MobiMetadata
 {
-    public class MobiHead : BaseHeader
+    public class MobiHead : BaseHead
     {
-        public readonly Attr IdentifierAttr = new(4);
+        private readonly Attr IdentifierAttr = new(4);
 
         public readonly Attr HeaderLengthAttr = new(4);
 
@@ -89,9 +89,7 @@ namespace MobiMetadata
         //194	0xc2	2	Last content record number  Number of last image record or number of last text record if it contains no images.Includes Image, DATP, HUFF, DRM.
         public readonly Attr LastContentRecordNumberAttr = new(2);
 
-        private EXTHHead exthHeader = null;
-
-        private Attr fullName;
+        private Attr _fullNameAttr;
 
         internal long PreviousHeaderPosition { get; set; }
 
@@ -182,8 +180,8 @@ namespace MobiMetadata
             var fullnamePos = PreviousHeaderPosition + FullNameOffset;
             stream.Position = fullnamePos;
 
-            fullName = new Attr((int)FullNameLength);
-            Read(stream, fullName);
+            _fullNameAttr = new Attr((int)FullNameLength);
+            Read(stream, _fullNameAttr);
         }
 
         private void ReadExthHeader(Stream stream, long mobiHeaderOffset)
@@ -197,19 +195,21 @@ namespace MobiMetadata
                 var exthOffset = mobiHeaderOffset + HeaderLength;
                 stream.Position = exthOffset;
 
-                exthHeader = new EXTHHead(Array.Empty<Attr>());
-                exthHeader.ReadHeader(stream);
-            }
-            else
-            {
-                exthHeader = new EXTHHead();
+                ExthHeader.ReadHeader(stream);
             }
         }
 
-        //Properties
-        public int ExthHeaderSize => exthHeader.Size;
+        internal void SetExthHeader(EXTHHead exthHeader)
+        {
+            ExthHeader = exthHeader ?? new EXTHHead();
+        }
 
-        public string FullName => Encoding.UTF8.GetString(fullName.Data);
+        public EXTHHead ExthHeader { get; private set; }
+
+        //Properties
+        public int ExthHeaderSize => ExthHeader == null ? -1 : ExthHeader.Size;
+
+        public string FullName => Encoding.UTF8.GetString(_fullNameAttr.Data);
 
         public string IdentifierAsString => Encoding.UTF8.GetString(IdentifierAttr.Data).Replace("\0", string.Empty);
 
@@ -288,7 +288,5 @@ namespace MobiMetadata
         public ushort FirstContentRecordNumber => Converter.ToUInt16(FirstContentRecordNumberAttr.Data);
 
         public ushort LastContentRecordNumber => Converter.ToUInt16(LastContentRecordNumberAttr.Data);
-
-        public EXTHHead EXTHHeader => exthHeader;
     }
 }
