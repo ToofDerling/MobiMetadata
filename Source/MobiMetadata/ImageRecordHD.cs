@@ -6,9 +6,12 @@
         {
             _stream.Position = pos;
 
-            IsCresRecord = IsRecordId("CRES");
+            //TODO: Changed this when PageRecords is async
+            IsCresRecord = IsRecordIdAsync("CRES").Result;
         }
 
+        
+        // TODO: Maybe move the CRES check in here?
         public override Span<byte> ReadData()
         {
             // Take into account the length between the CRES marker

@@ -1,4 +1,5 @@
 ﻿using AzwConverter;
+using System.IO;
 
 namespace MobiMetadata
 {
@@ -42,20 +43,27 @@ namespace MobiMetadata
                     throw new MobiMetadataException($"{mobiHeader.FullName}: No EXTHHeader");
                 }
             }
-            else if (!_pdbHeader.RecordInfoIsEmpty)
-            {
-                var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
-                var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
-
-                PageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
-                    _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
-                    coverIndexOffset, thumbIndexOffset);
-
-                PageRecords.AnalyzePageRecords();
-            }
         }
 
-        public void ReadHDImageRecords(Stream hdContainerStream)
+        public async Task ReadImageRecordsAsync(Stream stream)
+        {
+            if (PdbHeader.RecordInfoIsEmpty)
+            {
+                throw new MobiMetadataException("Cannot read image records: record information is empty"); 
+            }
+
+            var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
+            var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
+
+            PageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
+                _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
+                coverIndexOffset, thumbIndexOffset);
+
+            await PageRecords.AnalyzePageRecordsAsync();
+
+        }
+  
+        public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
         {
             var pdbHeader = MobiHeaderFactory.CreateReadAll<PDBHead>();
             MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr, 
@@ -72,7 +80,7 @@ namespace MobiMetadata
                 1, (ushort)(pdbHeader.Records.Length - 1),
                 MobiHeader.ExthHeader.CoverOffset, MobiHeader.ExthHeader.ThumbOffset);
 
-            PageRecordsHD.AnalyzePageRecordsHD(PageRecords.ContentRecords.Count);
+            await PageRecordsHD.AnalyzePageRecordsHDAsync(PageRecords.ContentRecords.Count);
         }
     }
 }

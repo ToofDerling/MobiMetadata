@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Text;
 
 namespace MobiMetadata
 {
@@ -20,20 +21,18 @@ namespace MobiMetadata
             _reader = new BinaryReader(stream);
         }
 
-        public bool TryGetRescRecord(out RescRecord rescRecord)
+        public async Task<RescRecord> GetRescRecordAsync()
         {
-            rescRecord = null;
-
             _stream.Position = _pos;
 
-            if (!IsRecordId("RESC"))
+            RescRecord rescRecord = null;
+            if (!await IsRecordIdAsync("RESC"))
             {
-                return false;
+                return rescRecord;
             }
 
-            rescRecord = new(_stream, _pos, (uint)_len);
-
-            return true;
+            rescRecord = new RescRecord(_stream, _pos, (uint)_len);
+            return rescRecord;
         }
 
         public bool IsLen1992Record()
@@ -41,18 +40,18 @@ namespace MobiMetadata
             return _len == 1992;
         }
 
-        public bool IsDatpRecord()
+        public async Task<bool> IsDatpRecordAsync()
         {
             _stream.Position = _pos;
 
-            return IsRecordId("DATP");
+            return await IsRecordIdAsync("DATP");
         }
 
-        public bool IsKindleEmbedRecord()
+        public async Task<bool> IsKindleEmbedRecordAsync()
         {
             _stream.Position = _pos;
 
-            return IsRecordId("kindle:embed");
+            return await IsRecordIdAsync("kindle:embed");
         }
 
         public bool IsCresRecord { get; protected set; }
@@ -60,24 +59,51 @@ namespace MobiMetadata
         public int Length => _len;
 
 #if !DEBUG
-        protected bool IsRecordId(string id)
+        protected async Task<bool> IsRecordIdAsync(string id)
         {
-            var bytes = _reader.ReadBytes(id.Length);
-            return Encoding.ASCII.GetString(bytes) == id;
+            var idLen = id.Length;
+
+            var bytes = ArrayPool<byte>.Shared.Rent(idLen);
+            
+            var memory = bytes.AsMemory(0, idLen);
+            var read = await _stream.ReadAsync(memory);
+
+            if (read != idLen)
+            {
+                throw new MobiMetadataException($"Error reading record. Expected {idLen} bytes, got {read}");
+            }
+
+            var sequence = new ReadOnlySequence<byte>(memory);
+            var res = Encoding.ASCII.GetString(sequence) == id;
+
+            ArrayPool<byte>.Shared.Return(bytes);
+
+            return res;
         }
 #else
-        protected bool IsRecordId(string id)
+        protected async Task<bool> IsRecordIdAsync(string id)
         {
             var peekLen = Math.Min(32, _len);
 
-            var bytes = _reader.ReadBytes(peekLen);
+            var bytes = ArrayPool<byte>.Shared.Rent(peekLen);
 
-            var idx = Encoding.ASCII.GetString(bytes).IndexOf(id);
+            var memory = bytes.AsMemory(0, peekLen);
+            var read = await _stream.ReadAsync(memory);
+
+            if (read != peekLen)
+            {
+                throw new MobiMetadataException($"Error reading record. Expected {peekLen} bytes, got {read}");
+            }
+
+            var sequence = new ReadOnlySequence<byte>(memory);
+            var idx = Encoding.ASCII.GetString(sequence).IndexOf(id);
+
+            ArrayPool<byte>.Shared.Return(bytes);
+            
             if (idx > 0)
             {
                 throw new MobiMetadataException($"Got expected identifier {id} at unexpected postion {idx}");
             }
-
             return idx == 0;
         }
 #endif
