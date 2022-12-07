@@ -28,17 +28,21 @@ namespace MobiMetadata
             _palmDocHeader = palmDocHeader ?? MobiHeaderFactory.CreateReadAll<PalmDOCHead>();
 
             _mobiHeader = mobiHeader ?? MobiHeaderFactory.CreateReadAll<MobiHead>();
-            _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
 
             _mobiHeader.SetExthHeader(exthHeader);
             _throwIfNoExthHeader = throwIfNoExthHeader;
         }
 
+        private Stream _stream;
+
         public async Task ReadMetadataAsync(Stream stream)
         {
+            _stream = stream;
+
             await _pdbHeader.ReadHeaderAsync(stream);
 
             await _palmDocHeader.ReadHeaderAsync(stream);
+            _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
 
             // This also reads the exthheader
             await _mobiHeader.ReadHeaderAsync(stream);
@@ -49,7 +53,7 @@ namespace MobiMetadata
             }
         }
 
-        public async Task ReadImageRecordsAsync(Stream stream)
+        public async Task ReadImageRecordsAsync()
         {
             if (PdbHeader.RecordInfoIsEmpty)
             {
@@ -59,7 +63,7 @@ namespace MobiMetadata
             var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
             var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
 
-            PageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
+            PageRecords = new PageRecords(_stream, _pdbHeader.Records, ImageType.SD,
                 _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
                 coverIndexOffset, thumbIndexOffset);
 

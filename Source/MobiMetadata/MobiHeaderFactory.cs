@@ -33,10 +33,5 @@ namespace AzwConverter
             }
             header.SetAttrsToRead(attrsToRead);
         }
-
-        public static void CacheMetadata(MobiMetadata.MobiMetadata metadata)
-        { 
-        //TODO:
-        }
     }
 }
