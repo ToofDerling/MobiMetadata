@@ -81,7 +81,7 @@
                 var rescRecord = await record.GetRescRecordAsync();
                 if (rescRecord != null)
                 {
-                    rescRecord.ParseXml();
+                    await rescRecord.ParseXmlAsync();
                     RescRecord = rescRecord;
 
                     break;
