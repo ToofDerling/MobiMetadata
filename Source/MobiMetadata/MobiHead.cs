@@ -94,11 +94,11 @@ namespace MobiMetadata
 
         internal long PreviousHeaderPosition { get; set; }
 
-        internal override void ReadHeader(Stream stream)
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
             var mobiHeaderOffset = stream.Position;
 
-            Read(stream, IdentifierAttr);
+            await ReadAsync(stream, IdentifierAttr);
             if (IdentifierAsString != "MOBI")
             {
                 throw new MobiMetadataException("Did not get expected MOBI identifier");
@@ -108,35 +108,35 @@ namespace MobiMetadata
             var readExthHeader = IsAttrToRead(ExthFlagsAttr);
             if (readExthHeader)
             {
-                Read(stream, HeaderLengthAttr);
+                await ReadAsync(stream, HeaderLengthAttr);
             }
             else
             {
-                ReadOrSkip(stream, HeaderLengthAttr);
+                await ReadOrSkipAsync(stream, HeaderLengthAttr);
             }
 
-            ReadOrSkip(stream, MobiTypeAttr);
-            ReadOrSkip(stream, TextEncodingAttr);
-            ReadOrSkip(stream, UniqueIDAttr);
-            ReadOrSkip(stream, FileVersionAttr);
-            ReadOrSkip(stream, OrthographicIndexAttr);
-            ReadOrSkip(stream, InflectionIndexAttr);
-            ReadOrSkip(stream, IndexNamesAttr);
-            ReadOrSkip(stream, IndexKeysAttr);
-            ReadOrSkip(stream, ExtraIndex0Attr);
-            ReadOrSkip(stream, ExtraIndex1Attr);
-            ReadOrSkip(stream, ExtraIndex2Attr);
-            ReadOrSkip(stream, ExtraIndex3Attr);
-            ReadOrSkip(stream, ExtraIndex4Attr);
-            ReadOrSkip(stream, ExtraIndex5Attr);
-            ReadOrSkip(stream, FirstNonBookIndexAttr);
+            await ReadOrSkipAsync(stream, MobiTypeAttr);
+            await ReadOrSkipAsync(stream, TextEncodingAttr);
+            await ReadOrSkipAsync(stream, UniqueIDAttr);
+            await ReadOrSkipAsync(stream, FileVersionAttr);
+            await ReadOrSkipAsync(stream, OrthographicIndexAttr);
+            await ReadOrSkipAsync(stream, InflectionIndexAttr);
+            await ReadOrSkipAsync(stream, IndexNamesAttr);
+            await ReadOrSkipAsync(stream, IndexKeysAttr);
+            await ReadOrSkipAsync(stream, ExtraIndex0Attr);
+            await ReadOrSkipAsync(stream, ExtraIndex1Attr);
+            await ReadOrSkipAsync(stream, ExtraIndex2Attr);
+            await ReadOrSkipAsync(stream, ExtraIndex3Attr);
+            await ReadOrSkipAsync(stream, ExtraIndex4Attr);
+            await ReadOrSkipAsync(stream, ExtraIndex5Attr);
+            await ReadOrSkipAsync(stream, FirstNonBookIndexAttr);
 
             // Handle these together as both are needed to read the fullname
             var readFullName = IsAttrToRead(FullNameOffsetAttr) || IsAttrToRead(FullNameLengthAttr);
             if (readFullName)
             {
-                Read(stream, FullNameOffsetAttr);
-                Read(stream, FullNameLengthAttr);
+                await ReadAsync(stream, FullNameOffsetAttr);
+                await ReadAsync(stream, FullNameLengthAttr);
             }
             else
             {
@@ -144,16 +144,16 @@ namespace MobiMetadata
                 Skip(stream, FullNameLengthAttr);
             }
 
-            ReadOrSkip(stream, LocaleAttr);
-            ReadOrSkip(stream, InputLanguageAttr);
-            ReadOrSkip(stream, OutputLanguageAttr);
-            ReadOrSkip(stream, MinVersionAttr);
-            ReadOrSkip(stream, FirstImageIndexAttr);
-            ReadOrSkip(stream, HuffmanRecordOffsetAttr);
-            ReadOrSkip(stream, HuffmanRecordCountAttr);
-            ReadOrSkip(stream, HuffmanTableOffsetAttr);
-            ReadOrSkip(stream, HuffmanTableLengthAttr);
-            ReadOrSkip(stream, ExthFlagsAttr);
+            await ReadOrSkipAsync(stream, LocaleAttr);
+            await ReadOrSkipAsync(stream, InputLanguageAttr);
+            await ReadOrSkipAsync(stream, OutputLanguageAttr);
+            await ReadOrSkipAsync(stream, MinVersionAttr);
+            await ReadOrSkipAsync(stream, FirstImageIndexAttr);
+            await ReadOrSkipAsync(stream, HuffmanRecordOffsetAttr);
+            await ReadOrSkipAsync(stream, HuffmanRecordCountAttr);
+            await ReadOrSkipAsync(stream, HuffmanTableOffsetAttr);
+            await ReadOrSkipAsync(stream, HuffmanTableLengthAttr);
+            await ReadOrSkipAsync(stream, ExthFlagsAttr);
             Skip(stream, Unknown1Attr);
             Skip(stream, Unknown2Attr);
             Skip(stream, DrmOffsetAttr);
@@ -161,31 +161,31 @@ namespace MobiMetadata
             Skip(stream, DrmSizeAttr);
             Skip(stream, DrmFlagsAttr);
             Skip(stream, Unknown3Attr);
-            ReadOrSkip(stream, FirstContentRecordNumberAttr);
-            ReadOrSkip(stream, LastContentRecordNumberAttr);
+            await ReadOrSkipAsync(stream, FirstContentRecordNumberAttr);
+            await ReadOrSkipAsync(stream, LastContentRecordNumberAttr);
 
             if (readExthHeader)
             {
-                ReadExthHeader(stream, mobiHeaderOffset);
+                await ReadExthHeaderAsync(stream, mobiHeaderOffset);
             }
 
             if (readFullName) 
             {
-                ReadFullName(stream);
+                await ReadFullNameAsync(stream);
             }
         }
 
-        private void ReadFullName(Stream stream)
+        private async Task ReadFullNameAsync(Stream stream)
         {
             //Read the fullname
             var fullnamePos = PreviousHeaderPosition + FullNameOffset;
             stream.Position = fullnamePos;
 
             _fullNameAttr = new Attr((int)FullNameLength);
-            Read(stream, _fullNameAttr);
+            await ReadAsync(stream, _fullNameAttr);
         }
 
-        private void ReadExthHeader(Stream stream, long mobiHeaderOffset)
+        private async Task ReadExthHeaderAsync(Stream stream, long mobiHeaderOffset)
         {
             //If bit 6 (0x40) is set, then there's an EXTH record 
             bool exthExists = (Converter.ToUInt32(ExthFlagsAttr.Data) & 0x40) != 0;
@@ -196,7 +196,7 @@ namespace MobiMetadata
                 var exthOffset = mobiHeaderOffset + HeaderLength;
                 stream.Position = exthOffset;
 
-                ExthHeader.ReadHeader(stream);
+                await ExthHeader.ReadHeaderAsync(stream);
             }
         }
 

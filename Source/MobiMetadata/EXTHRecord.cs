@@ -1,16 +1,25 @@
-﻿namespace MobiMetadata
+﻿using System;
+
+namespace MobiMetadata
 {
     public class EXTHRecord
     {
         private readonly byte[] _recordTypeData = new byte[4];
         private readonly byte[] _recordLength = new byte[4];
-        private readonly byte[] _recordData;
+        
+        private byte[] _recordData;
+        private readonly Dictionary<int, object> _recordTypesToRead;
 
-        public EXTHRecord(Stream stream, Dictionary<int, object> recordTypesToRead)
+        public EXTHRecord(Dictionary<int, object> recordTypesToRead)
         {
-            stream.Read(_recordTypeData, 0, _recordTypeData.Length);
+            _recordTypesToRead = recordTypesToRead;
+        }
 
-            stream.Read(_recordLength, 0, _recordLength.Length);
+        public async Task ReadRecordAsync(Stream stream)
+        {
+            await stream.ReadAsync(_recordTypeData);
+
+            await stream.ReadAsync(_recordLength);
             if (RecordLength < 8)
             {
                 throw new MobiMetadataException("Invalid EXTH record length");
@@ -18,10 +27,10 @@
 
             var dataLength = RecordLength - 8;
 
-            if (recordTypesToRead == null || recordTypesToRead.ContainsKey((int)RecordType))
+            if (_recordTypesToRead == null || _recordTypesToRead.ContainsKey((int)RecordType))
             {
                 _recordData = new byte[dataLength];
-                stream.Read(_recordData, 0, _recordData.Length);
+                await stream.ReadAsync(_recordData);
             }
             else
             {

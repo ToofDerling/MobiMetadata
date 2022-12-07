@@ -4,18 +4,26 @@
     {
         private readonly byte[] _recordDataOffset = new byte[4];
         //private readonly byte _recordAttributes = 0;
-        private readonly byte[] _uniqueID = new byte[3];
+        //private readonly byte[] _uniqueID = new byte[3];
 
-        public PDBRecordInfo(Stream stream, bool readRecordInfo)
+        private readonly bool _readRecordInfo;
+
+        public PDBRecordInfo(bool readRecordInfo)
         {
-            if (readRecordInfo)
+            _readRecordInfo = readRecordInfo;
+        }
+
+        public async Task ReadRecordInfoAsync(Stream stream)
+        {
+            if (_readRecordInfo)
             {
-                stream.Read(_recordDataOffset, 0, _recordDataOffset.Length);
-                
-                stream.Position++;
+                await stream.ReadAsync(_recordDataOffset);
+
+                //stream.Position++;
                 //_recordAttributes = (byte)stream.ReadByte();
-                
-                stream.Read(_uniqueID, 0, _uniqueID.Length);
+
+                //stream.Read(_uniqueID, 0, _uniqueID.Length);
+                stream.Position += 4;
             }
             else
             {

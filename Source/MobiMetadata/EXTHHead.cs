@@ -66,24 +66,27 @@ namespace MobiMetadata
 
         private EXTHRecord[] _recordList;
 
-        internal override void ReadHeader(Stream stream)
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
-            Read(stream, IdentifierAttr);
+            await ReadAsync(stream, IdentifierAttr);
 
             if (IdentifierAsString != "EXTH")
             {
                 throw new MobiMetadataException("Did not get expected EXTH identifier");
             }
 
-            ReadOrSkip(stream, HeaderLengthAttr);
+            await ReadOrSkipAsync(stream, HeaderLengthAttr);
 
-            Read(stream, RecordCountAttr);
+            await ReadAsync(stream, RecordCountAttr);
             var recordTypesToRead = GetExthRecordTypesToRead();
 
             _recordList = new EXTHRecord[RecordCount];
             for (int i = 0; i < RecordCount; i++)
             {
-                _recordList[i] = new EXTHRecord(stream, recordTypesToRead);
+                var exthRecord = new EXTHRecord(recordTypesToRead);
+                await exthRecord.ReadRecordAsync(stream);
+
+                _recordList[i] = exthRecord;
             }
         }
 

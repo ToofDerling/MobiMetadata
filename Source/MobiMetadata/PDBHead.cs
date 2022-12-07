@@ -40,24 +40,24 @@ namespace MobiMetadata
 
         public PDBRecordInfo[] Records => _recordInfoList;
 
-        internal override void ReadHeader(Stream stream)
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
-            ReadOrSkip(stream, NameAttr);
-            ReadOrSkip(stream, AttributesAttr);
-            ReadOrSkip(stream, VersionAttr);
-            ReadOrSkip(stream, CreationDateAttr);
-            ReadOrSkip(stream, ModificationDateAttr);
-            ReadOrSkip(stream, LastBackupDateAttr);
-            ReadOrSkip(stream, ModificationNumberAttr);
-            ReadOrSkip(stream, AppInfoIDAttr);
-            ReadOrSkip(stream, SortInfoIDAttr);
+            await ReadOrSkipAsync(stream, NameAttr);
+            await ReadOrSkipAsync(stream, AttributesAttr);
+            await ReadOrSkipAsync(stream, VersionAttr);
+            await ReadOrSkipAsync(stream, CreationDateAttr);
+            await ReadOrSkipAsync(stream, ModificationDateAttr);
+            await ReadOrSkipAsync(stream, LastBackupDateAttr);
+            await ReadOrSkipAsync(stream, ModificationNumberAttr);
+            await ReadOrSkipAsync(stream, AppInfoIDAttr);
+            await ReadOrSkipAsync(stream, SortInfoIDAttr);
 
-            ReadOrSkip(stream, TypeAttr);
-            ReadOrSkip(stream, CreatorAttr);
-            ReadOrSkip(stream, UniqueIDSeedAttr);
-            ReadOrSkip(stream, NextRecordListIDAttr);
+            await ReadOrSkipAsync(stream, TypeAttr);
+            await ReadOrSkipAsync(stream, CreatorAttr);
+            await ReadOrSkipAsync(stream, UniqueIDSeedAttr);
+            await ReadOrSkipAsync(stream, NextRecordListIDAttr);
 
-            Read(stream, NumRecordsAttr);
+            await ReadAsync(stream, NumRecordsAttr);
             int recordCount = Converter.ToInt16(NumRecordsAttr.Data);
 
             var readRecordInfo = IsAttrToRead(NumRecordsAttr);
@@ -66,7 +66,10 @@ namespace MobiMetadata
             _recordInfoList = new PDBRecordInfo[recordCount];
             for (int i = 0; i < recordCount; i++)
             {
-                _recordInfoList[i] = new PDBRecordInfo(stream, readRecordInfo);
+                var recordInfo = new PDBRecordInfo(readRecordInfo);
+                await recordInfo.ReadRecordInfoAsync(stream);
+
+                _recordInfoList[i] = recordInfo; 
             }
 
             Skip(stream, GapToDataAttr);

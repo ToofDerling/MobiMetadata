@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class ImageRecordHD : PageRecord
     {

@@ -1,5 +1,4 @@
 ﻿using AzwConverter;
-using System.IO;
 
 namespace MobiMetadata
 {
@@ -19,29 +18,34 @@ namespace MobiMetadata
 
         public PageRecords? PageRecordsHD { get; private set; }
 
-        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
+        private readonly bool _throwIfNoExthHeader;
+
+        public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
             EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
         {
             _pdbHeader = pdbHeader ?? MobiHeaderFactory.CreateReadAll<PDBHead>();
-            _pdbHeader.ReadHeader(stream);
 
             _palmDocHeader = palmDocHeader ?? MobiHeaderFactory.CreateReadAll<PalmDOCHead>();
-            _palmDocHeader.ReadHeader(stream);
 
             _mobiHeader = mobiHeader ?? MobiHeaderFactory.CreateReadAll<MobiHead>();
-
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
+
             _mobiHeader.SetExthHeader(exthHeader);
+            _throwIfNoExthHeader = throwIfNoExthHeader;
+        }
+
+        public async Task ReadMetadataAsync(Stream stream)
+        {
+            await _pdbHeader.ReadHeaderAsync(stream);
+
+            await _palmDocHeader.ReadHeaderAsync(stream);
 
             // This also reads the exthheader
-            _mobiHeader.ReadHeader(stream);
+            await _mobiHeader.ReadHeaderAsync(stream);
 
-            if (_mobiHeader.ExthHeader == null)
+            if (_mobiHeader.ExthHeader == null && _throwIfNoExthHeader)
             {
-                if (throwIfNoExthHeader)
-                {
-                    throw new MobiMetadataException($"{mobiHeader.FullName}: No EXTHHeader");
-                }
+                throw new MobiMetadataException($"No EXTHHeader");
             }
         }
 
@@ -49,7 +53,7 @@ namespace MobiMetadata
         {
             if (PdbHeader.RecordInfoIsEmpty)
             {
-                throw new MobiMetadataException("Cannot read image records: record information is empty"); 
+                throw new MobiMetadataException("Cannot read image records: record information is empty");
             }
 
             var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
@@ -60,16 +64,15 @@ namespace MobiMetadata
                 coverIndexOffset, thumbIndexOffset);
 
             await PageRecords.AnalyzePageRecordsAsync();
-
         }
-  
+
         public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
         {
             var pdbHeader = MobiHeaderFactory.CreateReadAll<PDBHead>();
-            MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr, 
+            MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr,
                 pdbHeader.NumRecordsAttr);
-            
-            pdbHeader.ReadHeader(hdContainerStream);
+
+            await pdbHeader.ReadHeaderAsync(hdContainerStream);
 
             if (!pdbHeader.IsHDImageContainer)
             {

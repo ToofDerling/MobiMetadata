@@ -18,17 +18,17 @@
 
         public long Position { get; private set; }
 
-        internal override void ReadHeader(Stream stream)
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
             Position = stream.Position;
 
-            ReadOrSkip(stream, CompressionAttr);
+            await ReadOrSkipAsync(stream, CompressionAttr);
             Skip(stream, Unused0Attr);
-            ReadOrSkip(stream, TextLengthAttr);
-            ReadOrSkip(stream, RecordCountAttr);
+            await ReadOrSkipAsync(stream, TextLengthAttr);
+            await ReadOrSkipAsync(stream, RecordCountAttr);
 
-            ReadOrSkip(stream, RecordSizeAttr);
-            ReadOrSkip(stream, EncryptionTypeAttr);
+            await ReadOrSkipAsync(stream, RecordSizeAttr);
+            await ReadOrSkipAsync(stream, EncryptionTypeAttr);
             Skip(stream, Unused1Attr);
         }
 

@@ -33,11 +33,11 @@
             return attrsToRead.ToDictionary(x => x.Key.ExthRecType, x => (object)null);
         }
 
-        protected void ReadOrSkip(Stream stream, Attr attr)
+        protected async Task ReadOrSkipAsync(Stream stream, Attr attr)
         {
             if (IsAttrToRead(attr))
             {
-                Read(stream, attr);
+                await ReadAsync(stream, attr);
             }
             else
             {
@@ -45,10 +45,10 @@
             }
         }
 
-        protected void Read(Stream stream, Attr attr)
+        protected async Task ReadAsync(Stream stream, Attr attr)
         {
             attr.Data = new byte[attr.Length];
-            stream.Read(attr.Data, 0, attr.Length);
+            await stream.ReadAsync(attr.Data);
         }
 
         protected void Skip(Stream stream, Attr attr)
@@ -73,6 +73,6 @@
 
         protected bool IsAttrToRead(Attr attr) => attrsToRead == null || attrsToRead.ContainsKey(attr);
 
-        internal abstract void ReadHeader(Stream stream);
+        internal abstract Task ReadHeaderAsync(Stream stream);
     }
 }
