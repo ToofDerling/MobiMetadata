@@ -96,7 +96,7 @@ namespace MobiMetadata
 
         public uint CreationDate => Converter.ToUInt32(GetPropData(CreationDateAttr).Span);
 
-        public uint ModificationDate => Converter.ToUInt32(GetPropData(CreationDateAttr).Span);
+        public uint ModificationDate => Converter.ToUInt32(GetPropData(ModificationDateAttr).Span);
 
         public uint LastBackupDate => Converter.ToUInt32(GetPropData(LastBackupDateAttr).Span);
 
