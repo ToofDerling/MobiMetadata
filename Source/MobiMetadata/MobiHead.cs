@@ -1,194 +1,160 @@
-﻿using AzwConverter;
-using System.Text;
+﻿using System.Text;
 
 namespace MobiMetadata
 {
     public class MobiHead : BaseHead
     {
-        private readonly Attr IdentifierAttr = new(4);
+        private static readonly List<Attr> mobiHeadAttrs = new();
 
-        public readonly Attr HeaderLengthAttr = new(4);
+        private static readonly Attr IdentifierAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr MobiTypeAttr = new(4);
+        public static readonly Attr HeaderLengthAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr TextEncodingAttr = new(4);
+        public static readonly Attr MobiTypeAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr UniqueIDAttr = new(4);
+        public static readonly Attr TextEncodingAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr FileVersionAttr = new(4);
+        public static readonly Attr UniqueIDAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr OrthographicIndexAttr = new(4);
+        public static readonly Attr FileVersionAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr InflectionIndexAttr = new(4);
+        public static readonly Attr OrthographicIndexAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr IndexNamesAttr = new(4);
+        public static readonly Attr InflectionIndexAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr IndexKeysAttr = new(4);
+        public static readonly Attr IndexNamesAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex0Attr = new(4);
+        public static readonly Attr IndexKeysAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex1Attr = new(4);
+        public static readonly Attr ExtraIndex0Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex2Attr = new(4);
+        public static readonly Attr ExtraIndex1Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex3Attr = new(4);
+        public static readonly Attr ExtraIndex2Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex4Attr = new(4);
+        public static readonly Attr ExtraIndex3Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExtraIndex5Attr = new(4);
+        public static readonly Attr ExtraIndex4Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr FirstNonBookIndexAttr = new(4);
+        public static readonly Attr ExtraIndex5Attr = new(4, mobiHeadAttrs);
 
-        public readonly Attr FullNameOffsetAttr = new(4);
+        public static readonly Attr FirstNonBookIndexAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr FullNameLengthAttr = new(4);
+        public static readonly Attr FullNameOffsetAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr LocaleAttr = new(4);
+        public static readonly Attr FullNameLengthAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr InputLanguageAttr = new(4);
+        public static readonly Attr LocaleAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr OutputLanguageAttr = new(4);
+        public static readonly Attr InputLanguageAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr MinVersionAttr = new(4);
+        public static readonly Attr OutputLanguageAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr FirstImageIndexAttr = new(4);
+        public static readonly Attr MinVersionAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr HuffmanRecordOffsetAttr = new(4);
+        public static readonly Attr FirstImageIndexAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr HuffmanRecordCountAttr = new(4);
+        public static readonly Attr HuffmanRecordOffsetAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr HuffmanTableOffsetAttr = new(4);
+        public static readonly Attr HuffmanRecordCountAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr HuffmanTableLengthAttr = new(4);
+        public static readonly Attr HuffmanTableOffsetAttr = new(4, mobiHeadAttrs);
 
-        public readonly Attr ExthFlagsAttr = new(4);
+        public static readonly Attr HuffmanTableLengthAttr = new(4, mobiHeadAttrs);
+
+        public static readonly Attr ExthFlagsAttr = new(4, mobiHeadAttrs);
 
         //132	0x84	32	?	32 unknown bytes, if MOBI is long enough
-        public readonly Attr Unknown1Attr = new(32);
+        public static readonly Attr Unknown1Attr = new(32, mobiHeadAttrs);
 
         //164	0xa4	4	Unknown Use 0xFFFFFFFF
-        public readonly Attr Unknown2Attr = new(4);
+        public static readonly Attr Unknown2Attr = new(4, mobiHeadAttrs);
 
         //168	0xa8	4	DRM Offset  Offset to DRM key info in DRMed files. 0xFFFFFFFF if no DRM
-        public readonly Attr DrmOffsetAttr = new(4);
+        public static readonly Attr DrmOffsetAttr = new(4, mobiHeadAttrs);
 
         //172	0xac	4	DRM Count   Number of entries in DRM info. 0xFFFFFFFF if no DRM
-        public readonly Attr DrmCountAttr = new(4);
+        public static readonly Attr DrmCountAttr = new(4, mobiHeadAttrs);
 
         //176	0xb0	4	DRM Size    Number of bytes in DRM info.
-        public readonly Attr DrmSizeAttr = new(4);
+        public static readonly Attr DrmSizeAttr = new(4, mobiHeadAttrs);
 
         //180	0xb4	4	DRM Flags   Some flags concerning the DRM info.
-        public readonly Attr DrmFlagsAttr = new(4);
+        public static readonly Attr DrmFlagsAttr = new(4, mobiHeadAttrs);
 
         //184	0xb8	8	Unknown Bytes to the end of the MOBI header, including the following if the header length >= 228 (244 from start of record). Use 0x0000000000000000.
-        public readonly Attr Unknown3Attr = new(8);
+        public static readonly Attr Unknown3Attr = new(8, mobiHeadAttrs);
 
         //192	0xc0	2	First content record number Number of first text record. Normally 1.
-        public readonly Attr FirstContentRecordNumberAttr = new(2);
+        public static readonly Attr FirstContentRecordNumberAttr = new(2, mobiHeadAttrs);
 
         //194	0xc2	2	Last content record number  Number of last image record or number of last text record if it contains no images.Includes Image, DATP, HUFF, DRM.
-        public readonly Attr LastContentRecordNumberAttr = new(2);
-
-        private Attr _fullNameAttr;
+        public static readonly Attr LastContentRecordNumberAttr = new(2, mobiHeadAttrs);
 
         internal long PreviousHeaderPosition { get; set; }
+
+        public bool SkipExthHeader { get; set; }
+
+        private Memory<byte> FullNameData { get; set; }
+
+        public MobiHead(bool skipProperties = false, bool skipRecords = false, bool skipExthHeader = false)
+        {
+            SkipProperties = skipProperties;
+            SkipRecords = skipRecords;
+
+            SkipExthHeader = skipExthHeader;
+            if (!SkipExthHeader)
+            {
+                SkipProperties = false;
+            }
+        }
 
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var mobiHeaderOffset = stream.Position;
 
-            await ReadAsync(stream, IdentifierAttr);
+            var attrLen = mobiHeadAttrs.Sum(x => x.Length);
+            await SkipOrReadAsync(stream, attrLen);
+
+            var snal = stream.Position;
+
             if (IdentifierAsString != "MOBI")
             {
                 throw new MobiMetadataException("Did not get expected MOBI identifier");
             }
 
-            // Need the header length to read the EXTH header
-            var readExthHeader = IsAttrToRead(ExthFlagsAttr);
-            if (readExthHeader)
-            {
-                await ReadAsync(stream, HeaderLengthAttr);
-            }
-            else
-            {
-                await ReadOrSkipAsync(stream, HeaderLengthAttr);
-            }
-
-            await ReadOrSkipAsync(stream, MobiTypeAttr);
-            await ReadOrSkipAsync(stream, TextEncodingAttr);
-            await ReadOrSkipAsync(stream, UniqueIDAttr);
-            await ReadOrSkipAsync(stream, FileVersionAttr);
-            await ReadOrSkipAsync(stream, OrthographicIndexAttr);
-            await ReadOrSkipAsync(stream, InflectionIndexAttr);
-            await ReadOrSkipAsync(stream, IndexNamesAttr);
-            await ReadOrSkipAsync(stream, IndexKeysAttr);
-            await ReadOrSkipAsync(stream, ExtraIndex0Attr);
-            await ReadOrSkipAsync(stream, ExtraIndex1Attr);
-            await ReadOrSkipAsync(stream, ExtraIndex2Attr);
-            await ReadOrSkipAsync(stream, ExtraIndex3Attr);
-            await ReadOrSkipAsync(stream, ExtraIndex4Attr);
-            await ReadOrSkipAsync(stream, ExtraIndex5Attr);
-            await ReadOrSkipAsync(stream, FirstNonBookIndexAttr);
-
-            // Handle these together as both are needed to read the fullname
-            var readFullName = IsAttrToRead(FullNameOffsetAttr) || IsAttrToRead(FullNameLengthAttr);
-            if (readFullName)
-            {
-                await ReadAsync(stream, FullNameOffsetAttr);
-                await ReadAsync(stream, FullNameLengthAttr);
-            }
-            else
-            {
-                Skip(stream, FullNameOffsetAttr);
-                Skip(stream, FullNameLengthAttr);
-            }
-
-            await ReadOrSkipAsync(stream, LocaleAttr);
-            await ReadOrSkipAsync(stream, InputLanguageAttr);
-            await ReadOrSkipAsync(stream, OutputLanguageAttr);
-            await ReadOrSkipAsync(stream, MinVersionAttr);
-            await ReadOrSkipAsync(stream, FirstImageIndexAttr);
-            await ReadOrSkipAsync(stream, HuffmanRecordOffsetAttr);
-            await ReadOrSkipAsync(stream, HuffmanRecordCountAttr);
-            await ReadOrSkipAsync(stream, HuffmanTableOffsetAttr);
-            await ReadOrSkipAsync(stream, HuffmanTableLengthAttr);
-            await ReadOrSkipAsync(stream, ExthFlagsAttr);
-            Skip(stream, Unknown1Attr);
-            Skip(stream, Unknown2Attr);
-            Skip(stream, DrmOffsetAttr);
-            Skip(stream, DrmCountAttr);
-            Skip(stream, DrmSizeAttr);
-            Skip(stream, DrmFlagsAttr);
-            Skip(stream, Unknown3Attr);
-            await ReadOrSkipAsync(stream, FirstContentRecordNumberAttr);
-            await ReadOrSkipAsync(stream, LastContentRecordNumberAttr);
-
-            if (readExthHeader)
+            if (!SkipExthHeader)
             {
                 await ReadExthHeaderAsync(stream, mobiHeaderOffset);
             }
-
-            if (readFullName) 
+            
+            if (!SkipProperties)
             {
                 await ReadFullNameAsync(stream);
             }
+
+            var fullname = FullName;
         }
 
         private async Task ReadFullNameAsync(Stream stream)
         {
             //Read the fullname
-            var fullnamePos = PreviousHeaderPosition + FullNameOffset;
+            var rufus = PreviousHeaderPosition;
+
+            var fullnamePos = rufus + FullNameOffset;
             stream.Position = fullnamePos;
 
-            _fullNameAttr = new Attr((int)FullNameLength);
-            await ReadAsync(stream, _fullNameAttr);
+            var fullnameLength = (int)FullNameLength;
+
+            FullNameData = new byte[fullnameLength];
+
+            await stream.ReadAsync(FullNameData);
         }
 
         private async Task ReadExthHeaderAsync(Stream stream, long mobiHeaderOffset)
         {
             //If bit 6 (0x40) is set, then there's an EXTH record 
-            bool exthExists = (Converter.ToUInt32(ExthFlagsAttr.Data) & 0x40) != 0;
+            bool exthExists = (Converter.ToUInt32(GetPropData(ExthFlagsAttr).Span) & 0x40) != 0;
             if (exthExists)
             {
                 // The EXTH header immediately follows the EXTH header, but as the MOBI header is of
@@ -202,7 +168,7 @@ namespace MobiMetadata
 
         internal void SetExthHeader(EXTHHead exthHeader)
         {
-            ExthHeader = exthHeader ?? MobiHeaderFactory.CreateReadAll<EXTHHead>();
+            ExthHeader = exthHeader ?? new EXTHHead();
         }
 
         public EXTHHead ExthHeader { get; private set; }
@@ -210,15 +176,15 @@ namespace MobiMetadata
         //Properties
         public int ExthHeaderSize => ExthHeader == null ? -1 : ExthHeader.Size;
 
-        public string FullName => Encoding.UTF8.GetString(_fullNameAttr.Data);
+        public string FullName => Encoding.UTF8.GetString(FullNameData.Span);
 
-        public string IdentifierAsString => Encoding.UTF8.GetString(IdentifierAttr.Data).Replace("\0", string.Empty);
+        public string IdentifierAsString => Encoding.UTF8.GetString(GetPropData(IdentifierAttr).Span).Replace("\0", string.Empty);
 
-        public uint HeaderLength => Converter.ToUInt32(HeaderLengthAttr.Data);
+        public uint HeaderLength => Converter.ToUInt32(GetPropData(HeaderLengthAttr).Span);
 
-        public uint FirstImageIndex => Converter.ToUInt32(FirstImageIndexAttr.Data);
+        public uint FirstImageIndex => Converter.ToUInt32(GetPropData(FirstImageIndexAttr).Span);
 
-        public uint MobiType => Converter.ToUInt32(MobiTypeAttr.Data);
+        public uint MobiType => Converter.ToUInt32(GetPropData(MobiTypeAttr).Span);
 
         public string MobiTypeAsString => MobiType switch
         {
@@ -237,7 +203,7 @@ namespace MobiMetadata
             _ => $"Unknown (0)",
         };
 
-        public uint TextEncoding => Converter.ToUInt32(TextEncodingAttr.Data);
+        public uint TextEncoding => Converter.ToUInt32(GetPropData(TextEncodingAttr).Span);
 
         public string TextEncodingAsString => TextEncoding switch
         {
@@ -246,48 +212,48 @@ namespace MobiMetadata
             _ => null,
         };
 
-        public uint UniqueID => Converter.ToUInt32(UniqueIDAttr.Data);
+        public uint UniqueID => Converter.ToUInt32(GetPropData(UniqueIDAttr).Span);
 
-        public uint FileVersion => Converter.ToUInt32(FileVersionAttr.Data);
+        public uint FileVersion => Converter.ToUInt32(GetPropData(FileVersionAttr).Span);
 
-        public uint OrthographicIndex => Converter.ToUInt32(OrthographicIndexAttr.Data);
+        public uint OrthographicIndex => Converter.ToUInt32(GetPropData(OrthographicIndexAttr).Span);
 
-        public uint InflectionIndex => Converter.ToUInt32(InflectionIndexAttr.Data);
+        public uint InflectionIndex => Converter.ToUInt32(GetPropData(InflectionIndexAttr).Span);
 
-        public uint IndexNames => Converter.ToUInt32(IndexNamesAttr.Data);
+        public uint IndexNames => Converter.ToUInt32(GetPropData(IndexNamesAttr).Span);
 
-        public uint IndexKeys => Converter.ToUInt32(IndexKeysAttr.Data);
+        public uint IndexKeys => Converter.ToUInt32(GetPropData(IndexKeysAttr).Span);
 
-        public uint ExtraIndex0 => Converter.ToUInt32(ExtraIndex0Attr.Data);
+        public uint ExtraIndex0 => Converter.ToUInt32(GetPropData(ExtraIndex0Attr).Span);
 
-        public uint ExtraIndex1 => Converter.ToUInt32(ExtraIndex1Attr.Data);
+        public uint ExtraIndex1 => Converter.ToUInt32(GetPropData(ExtraIndex1Attr).Span);
 
-        public uint ExtraIndex2 => Converter.ToUInt32(ExtraIndex2Attr.Data);
+        public uint ExtraIndex2 => Converter.ToUInt32(GetPropData(ExtraIndex2Attr).Span);
 
-        public uint ExtraIndex3 => Converter.ToUInt32(ExtraIndex3Attr.Data);
+        public uint ExtraIndex3 => Converter.ToUInt32(GetPropData(ExtraIndex3Attr).Span);
 
-        public uint ExtraIndex4 => Converter.ToUInt32(ExtraIndex4Attr.Data);
+        public uint ExtraIndex4 => Converter.ToUInt32(GetPropData(ExtraIndex4Attr).Span);
 
-        public uint ExtraIndex5 => Converter.ToUInt32(ExtraIndex5Attr.Data);
+        public uint ExtraIndex5 => Converter.ToUInt32(GetPropData(ExtraIndex5Attr).Span);
 
-        public uint FirstNonBookIndex => Converter.ToUInt32(FirstNonBookIndexAttr.Data);
+        public uint FirstNonBookIndex => Converter.ToUInt32(GetPropData(FirstNonBookIndexAttr).Span);
 
-        public uint FullNameOffset => Converter.ToUInt32(FullNameOffsetAttr.Data);
+        public uint FullNameOffset => Converter.ToUInt32(GetPropData(FullNameOffsetAttr).Span);
 
-        public uint FullNameLength => Converter.ToUInt32(FullNameLengthAttr.Data);
+        public uint FullNameLength => Converter.ToUInt32(GetPropData(FullNameLengthAttr).Span);
 
-        public uint MinVersion => Converter.ToUInt32(MinVersionAttr.Data);
+        public uint MinVersion => Converter.ToUInt32(GetPropData(MinVersionAttr).Span);
 
-        public uint HuffmanRecordOffset => Converter.ToUInt32(HuffmanRecordOffsetAttr.Data);
+        public uint HuffmanRecordOffset => Converter.ToUInt32(GetPropData(HuffmanRecordOffsetAttr).Span);
 
-        public uint HuffmanRecordCount => Converter.ToUInt32(HuffmanRecordCountAttr.Data);
+        public uint HuffmanRecordCount => Converter.ToUInt32(GetPropData(HuffmanRecordCountAttr).Span);
 
-        public uint HuffmanTableOffset => Converter.ToUInt32(HuffmanTableOffsetAttr.Data);
+        public uint HuffmanTableOffset => Converter.ToUInt32(GetPropData(HuffmanTableOffsetAttr).Span);
 
-        public uint HuffmanTableLength => Converter.ToUInt32(HuffmanTableLengthAttr.Data);
+        public uint HuffmanTableLength => Converter.ToUInt32(GetPropData(HuffmanTableLengthAttr).Span);
 
-        public ushort FirstContentRecordNumber => Converter.ToUInt16(FirstContentRecordNumberAttr.Data);
+        public ushort FirstContentRecordNumber => Converter.ToUInt16(GetPropData(FirstContentRecordNumberAttr).Span);
 
-        public ushort LastContentRecordNumber => Converter.ToUInt16(LastContentRecordNumberAttr.Data);
+        public ushort LastContentRecordNumber => Converter.ToUInt16(GetPropData(LastContentRecordNumberAttr).Span);
     }
 }

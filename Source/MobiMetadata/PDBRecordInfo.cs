@@ -2,35 +2,29 @@
 {
     public class PDBRecordInfo
     {
-        private readonly byte[] _recordDataOffset = new byte[4];
+        public static int PdbRecordLen => 8;
+
+        private readonly int _recordDataOffsetLen = 4;
+        private readonly int _recordDataOffsetPos = 0;
         //private readonly byte _recordAttributes = 0;
         //private readonly byte[] _uniqueID = new byte[3];
 
-        private readonly bool _readRecordInfo;
+        private readonly Memory<byte> _recordsData;
 
-        public PDBRecordInfo(bool readRecordInfo)
+        private readonly int _recordPosition;
+
+        public PDBRecordInfo(Memory<byte> recordsData, int recordPosition)
         {
-            _readRecordInfo = readRecordInfo;
+            _recordsData = recordsData;
+            _recordPosition = recordPosition;
         }
 
-        public async Task ReadRecordInfoAsync(Stream stream)
+        private Memory<byte> GetPropertyData(int pos, int len)
         {
-            if (_readRecordInfo)
-            {
-                await stream.ReadAsync(_recordDataOffset);
-
-                //stream.Position++;
-                //_recordAttributes = (byte)stream.ReadByte();
-
-                //stream.Read(_uniqueID, 0, _uniqueID.Length);
-                stream.Position += 4;
-            }
-            else
-            {
-                stream.Position += 8;
-            }
+            return _recordsData.Slice(_recordPosition + pos, len);
         }
 
-        public uint RecordDataOffset => Converter.ToUInt32(_recordDataOffset);
+        public uint RecordDataOffset
+            => Converter.ToUInt32(GetPropertyData(_recordDataOffsetPos, _recordDataOffsetLen).Span);
     }
 }

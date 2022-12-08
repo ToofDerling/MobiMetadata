@@ -23,11 +23,11 @@ namespace MobiMetadata
         public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
             EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
         {
-            _pdbHeader = pdbHeader ?? MobiHeaderFactory.CreateReadAll<PDBHead>();
+            _pdbHeader = pdbHeader ?? new PDBHead();
 
-            _palmDocHeader = palmDocHeader ?? MobiHeaderFactory.CreateReadAll<PalmDOCHead>();
+            _palmDocHeader = palmDocHeader ?? new PalmDOCHead();
 
-            _mobiHeader = mobiHeader ?? MobiHeaderFactory.CreateReadAll<MobiHead>();
+            _mobiHeader = mobiHeader ?? new MobiHead();
 
             _mobiHeader.SetExthHeader(exthHeader);
             _throwIfNoExthHeader = throwIfNoExthHeader;
@@ -55,9 +55,9 @@ namespace MobiMetadata
 
         public async Task ReadImageRecordsAsync()
         {
-            if (PdbHeader.RecordInfoIsEmpty)
+            if (PdbHeader.SkipRecords)
             {
-                throw new MobiMetadataException("Cannot read image records: record information is empty");
+                throw new MobiMetadataException($"Cannot read image records ({nameof(PdbHeader.SkipRecords)} is {PdbHeader.SkipRecords}).");
             }
 
             var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
@@ -72,10 +72,7 @@ namespace MobiMetadata
 
         public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
         {
-            var pdbHeader = MobiHeaderFactory.CreateReadAll<PDBHead>();
-            MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr,
-                pdbHeader.NumRecordsAttr);
-
+            var pdbHeader = new PDBHead();
             await pdbHeader.ReadHeaderAsync(hdContainerStream);
 
             if (!pdbHeader.IsHDImageContainer)
