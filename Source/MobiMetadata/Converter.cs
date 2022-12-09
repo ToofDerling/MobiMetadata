@@ -19,6 +19,7 @@ namespace MobiMetadata
         //{
         //    return BitConverter.ToInt64(CheckBytes(bytes), 0);
         //}
+
         public static ushort ToUInt16(ReadOnlySpan<byte> bytes)
         {
             var res = BitConverter.ToUInt16(bytes);

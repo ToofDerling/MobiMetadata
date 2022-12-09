@@ -149,7 +149,7 @@ namespace MobiMetadata
             bool exthExists = (Converter.ToUInt32(GetPropData(ExthFlagsAttr).Span) & 0x40) != 0;
             if (exthExists)
             {
-                // The EXTH header immediately follows the EXTH header, but as the MOBI header is of
+                // The EXTH header immediately follows the Mobi header, but as the MOBI header is of
                 // variable length, we have to calculate the EXTH header offset.
                 var exthOffset = mobiHeaderOffset + HeaderLength;
                 stream.Position = exthOffset;
