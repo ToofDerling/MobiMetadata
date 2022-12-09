@@ -154,13 +154,9 @@ namespace MobiMetadata
                 var exthOffset = mobiHeaderOffset + HeaderLength;
                 stream.Position = exthOffset;
 
+                ExthHeader = new EXTHHead();
                 await ExthHeader.ReadHeaderAsync(stream);
             }
-        }
-
-        internal void SetExthHeader(EXTHHead exthHeader)
-        {
-            ExthHeader = exthHeader ?? new EXTHHead();
         }
 
         public EXTHHead ExthHeader { get; private set; }

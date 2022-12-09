@@ -1,5 +1,4 @@
 ﻿using System.Buffers;
-using System.IO;
 using System.Text;
 
 namespace MobiMetadata

@@ -19,7 +19,7 @@
         private readonly bool _throwIfNoExthHeader;
 
         public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
-            EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
+            bool throwIfNoExthHeader = false)
         {
             _pdbHeader = pdbHeader ?? new PDBHead();
 
@@ -27,7 +27,6 @@
 
             _mobiHeader = mobiHeader ?? new MobiHead();
 
-            _mobiHeader.SetExthHeader(exthHeader);
             _throwIfNoExthHeader = throwIfNoExthHeader;
         }
 

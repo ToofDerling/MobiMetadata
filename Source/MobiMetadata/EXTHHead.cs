@@ -19,7 +19,7 @@ namespace MobiMetadata
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = exthHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadAsync(stream, attrLen);
+            await ReadAsync(stream, attrLen);
 
             if (IdentifierAsString != "EXTH")
             {
@@ -138,7 +138,7 @@ namespace MobiMetadata
             return record != null ? Converter.ToUInt32(record.RecordData.Span) : uint.MaxValue;
         }
 
-        private EXTHRecord GetRecord(uint recordType)
+        private EXTHRecord? GetRecord(uint recordType)
         {
             return _recordList.FirstOrDefault(rec => rec.RecordType == recordType);
         }

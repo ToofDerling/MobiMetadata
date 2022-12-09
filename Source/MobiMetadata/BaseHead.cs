@@ -41,10 +41,14 @@
             }
             else
             {
-                HeaderData = new byte[length];
-
-                await stream.ReadAsync(HeaderData);
+                await ReadAsync(stream, length);
             }
+        }
+
+        protected async Task ReadAsync(Stream stream, int length)
+        {
+            HeaderData = new byte[length];
+            await stream.ReadAsync(HeaderData);
         }
 
         protected Memory<byte> GetPropData(Attr attr)
