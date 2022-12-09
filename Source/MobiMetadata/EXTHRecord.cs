@@ -1,14 +1,14 @@
 ﻿namespace MobiMetadata
 {
-    public class EXTHRecord : BaseRecord
+    public sealed class EXTHRecord : BaseRecord
     {
-        private readonly int _recordTypePos = 0;
-        private readonly int _recordTypeLen = 4;
+        private const int _recordTypePos = 0;
+        private const int _recordTypeLen = 4;
 
-        private readonly int _recordLengthPos = 4;
-        private readonly int _recordLengthLen = 4;
+        private const int _recordLengthPos = 4;
+        private const int _recordLengthLen = 4;
 
-        private readonly int _dataPos = 8;
+        private const int _dataPos = 8;
         private readonly int _dataLen;
 
         public EXTHRecord(Memory<byte> recordsData, int recordPosition) : base(recordsData, recordPosition)

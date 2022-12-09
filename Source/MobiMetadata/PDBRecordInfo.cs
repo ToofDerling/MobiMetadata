@@ -1,11 +1,11 @@
 ﻿namespace MobiMetadata
 {
-    public class PDBRecordInfo : BaseRecord
+    public sealed class PDBRecordInfo : BaseRecord
     {
         public static int PdbRecordLen => 8;
 
-        private readonly int _recordDataOffsetPos = 0;
-        private readonly int _recordDataOffsetLen = 4;
+        private const int _recordDataOffsetPos = 0;
+        private const int _recordDataOffsetLen = 4;
 
         //private readonly byte _recordAttributes = 0;
         //private readonly byte[] _uniqueID = new byte[3];
