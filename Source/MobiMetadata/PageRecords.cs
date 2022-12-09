@@ -23,8 +23,7 @@
         public RescRecord RescRecord { get; set; }
 
         public PageRecords(Stream stream, PDBRecordInfo[] pdbRecords, ImageType imageType,
-            uint firstImageIndex, ushort lastImageIndex,
-            uint coverIndexOffset, uint thumbIndexOffset)
+            uint firstImageIndex, ushort lastImageIndex, uint coverIndexOffset, uint thumbIndexOffset)
         {
             ImageType = imageType;
 

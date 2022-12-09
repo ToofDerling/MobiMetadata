@@ -4,19 +4,19 @@
     {
         private static readonly List<Attr> palmDocHeadAttrs = new();
 
-        private static readonly Attr CompressionAttr = new(2, palmDocHeadAttrs);
+        private static Attr CompressionAttr => new(2, palmDocHeadAttrs);
 
-        private static readonly Attr Unused0Attr = new(2, palmDocHeadAttrs);
+        private static Attr Unused0Attr => new(2, palmDocHeadAttrs);
 
-        private static readonly Attr TextLengthAttr = new(4, palmDocHeadAttrs);
+        private static Attr TextLengthAttr => new(4, palmDocHeadAttrs);
 
-        private static readonly Attr RecordCountAttr = new(2, palmDocHeadAttrs);
+        private static Attr RecordCountAttr => new(2, palmDocHeadAttrs);
 
-        private static readonly Attr RecordSizeAttr = new(2, palmDocHeadAttrs);
+        private static Attr RecordSizeAttr => new(2, palmDocHeadAttrs);
 
-        private static readonly Attr EncryptionTypeAttr = new(2, palmDocHeadAttrs);
+        private static Attr EncryptionTypeAttr => new(2, palmDocHeadAttrs);
 
-        private static readonly Attr Unused1Attr = new(2, palmDocHeadAttrs);
+        private static Attr Unused1Attr => new(2, palmDocHeadAttrs);
 
         public long Position { get; private set; }
 

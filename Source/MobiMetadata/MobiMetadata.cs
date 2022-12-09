@@ -1,6 +1,4 @@
-﻿using AzwConverter;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class MobiMetadata
     {

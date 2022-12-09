@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.IO;
 using System.Text;
 
 namespace MobiMetadata
@@ -16,7 +17,7 @@ namespace MobiMetadata
             _len = (int)len;
         }
 
-        public async Task<RescRecord> GetRescRecordAsync()
+        public async Task<RescRecord?> GetRescRecordAsync()
         {
             _stream.Position = _pos;
 
@@ -62,8 +63,7 @@ namespace MobiMetadata
         {
             var slice = memory[..id.Length];
 
-            var sequence = new ReadOnlySequence<byte>(slice);
-            var res = Encoding.ASCII.GetString(sequence) == id;
+            var res = Encoding.ASCII.GetString(slice.Span) == id;
 
             return res;
         }
@@ -105,11 +105,8 @@ namespace MobiMetadata
             var bytes = ArrayPool<byte>.Shared.Rent(len);
             try
             {
-
                 var memory = await ReadDataAsync(bytes, len);
-                var sequence = new ReadOnlySequence<byte>(memory);
-
-                return Encoding.UTF8.GetString(sequence);
+                return Encoding.UTF8.GetString(memory.Span);
             }
             finally
             {
@@ -156,7 +153,9 @@ namespace MobiMetadata
 
                 if (file != null)
                 {
-                    using var fileStream = File.Open(file, FileMode.Create, FileAccess.Write);
+                    using var fileStream
+                        = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None, 0, FileOptions.Asynchronous | FileOptions.SequentialScan);
+
                     await fileStream.WriteAsync(memory);
                 }
 
