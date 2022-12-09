@@ -6,11 +6,11 @@ namespace MobiMetadata
     {
         private static readonly List<Attr> exthHeadAttrs = new();
 
-        private readonly Attr IdentifierAttr = new(4, exthHeadAttrs);
+        private static readonly Attr IdentifierAttr = new(4, exthHeadAttrs);
 
-        public readonly Attr HeaderLengthAttr = new(4, exthHeadAttrs);
+        private static readonly Attr HeaderLengthAttr = new(4, exthHeadAttrs);
 
-        public readonly Attr RecordCountAttr = new(4, exthHeadAttrs);
+        private static readonly Attr RecordCountAttr = new(4, exthHeadAttrs);
 
         private EXTHRecord[] _recordList;
         

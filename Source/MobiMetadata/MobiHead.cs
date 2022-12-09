@@ -6,90 +6,90 @@ namespace MobiMetadata
     {
         private static readonly List<Attr> mobiHeadAttrs = new();
 
-        private static Attr IdentifierAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr IdentifierAttr = new(4, mobiHeadAttrs);
 
-        private static Attr HeaderLengthAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr HeaderLengthAttr = new(4, mobiHeadAttrs);
 
-        private static Attr MobiTypeAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr MobiTypeAttr = new(4, mobiHeadAttrs);
 
-        private static Attr TextEncodingAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr TextEncodingAttr = new(4, mobiHeadAttrs);
 
-        private static Attr UniqueIDAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr UniqueIDAttr = new(4, mobiHeadAttrs);
 
-        private static Attr FileVersionAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr FileVersionAttr = new(4, mobiHeadAttrs);
 
-        private static Attr OrthographicIndexAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr OrthographicIndexAttr = new(4, mobiHeadAttrs);
 
-        private static Attr InflectionIndexAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr InflectionIndexAttr = new(4, mobiHeadAttrs);
 
-        private static Attr IndexNamesAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr IndexNamesAttr = new(4, mobiHeadAttrs);
 
-        private static Attr IndexKeysAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr IndexKeysAttr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex0Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex0Attr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex1Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex1Attr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex2Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex2Attr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex3Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex3Attr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex4Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex4Attr = new(4, mobiHeadAttrs);
 
-        private static Attr ExtraIndex5Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExtraIndex5Attr = new(4, mobiHeadAttrs);
 
-        private static Attr FirstNonBookIndexAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr FirstNonBookIndexAttr = new(4, mobiHeadAttrs);
 
-        private static Attr FullNameOffsetAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr FullNameOffsetAttr = new(4, mobiHeadAttrs);
 
-        private static Attr FullNameLengthAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr FullNameLengthAttr = new(4, mobiHeadAttrs);
 
-        private static Attr LocaleAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr LocaleAttr = new(4, mobiHeadAttrs);
 
-        private static Attr InputLanguageAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr InputLanguageAttr = new(4, mobiHeadAttrs);
 
-        private static Attr OutputLanguageAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr OutputLanguageAttr = new(4, mobiHeadAttrs);
 
-        private static Attr MinVersionAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr MinVersionAttr = new(4, mobiHeadAttrs);
 
-        private static Attr FirstImageIndexAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr FirstImageIndexAttr = new(4, mobiHeadAttrs);
 
-        private static Attr HuffmanRecordOffsetAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr HuffmanRecordOffsetAttr = new(4, mobiHeadAttrs);
 
-        private static Attr HuffmanRecordCountAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr HuffmanRecordCountAttr = new(4, mobiHeadAttrs);
 
-        private static Attr HuffmanTableOffsetAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr HuffmanTableOffsetAttr = new(4, mobiHeadAttrs);
 
-        private static Attr HuffmanTableLengthAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr HuffmanTableLengthAttr = new(4, mobiHeadAttrs);
 
-        private static Attr ExthFlagsAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr ExthFlagsAttr = new(4, mobiHeadAttrs);
 
         //132	0x84	32	?	32 unknown bytes, if MOBI is long enough
-        private static Attr Unknown1Attr => new(32, mobiHeadAttrs);
+        private static readonly Attr Unknown1Attr = new(32, mobiHeadAttrs);
 
         //164	0xa4	4	Unknown Use 0xFFFFFFFF
-        private static Attr Unknown2Attr => new(4, mobiHeadAttrs);
+        private static readonly Attr Unknown2Attr = new(4, mobiHeadAttrs);
 
         //168	0xa8	4	DRM Offset  Offset to DRM key info in DRMed files. 0xFFFFFFFF if no DRM
-        private static Attr DrmOffsetAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr DrmOffsetAttr = new(4, mobiHeadAttrs);
 
         //172	0xac	4	DRM Count   Number of entries in DRM info. 0xFFFFFFFF if no DRM
-        private static Attr DrmCountAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr DrmCountAttr = new(4, mobiHeadAttrs);
 
         //176	0xb0	4	DRM Size    Number of bytes in DRM info.
-        private static Attr DrmSizeAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr DrmSizeAttr = new(4, mobiHeadAttrs);
 
         //180	0xb4	4	DRM Flags   Some flags concerning the DRM info.
-        private static Attr DrmFlagsAttr => new(4, mobiHeadAttrs);
+        private static readonly Attr DrmFlagsAttr = new(4, mobiHeadAttrs);
 
         //184	0xb8	8	Unknown Bytes to the end of the MOBI header, including the following if the header length >= 228 (244 from start of record). Use 0x0000000000000000.
-        private static Attr Unknown3Attr => new(8, mobiHeadAttrs);
+        private static readonly Attr Unknown3Attr = new(8, mobiHeadAttrs);
 
         //192	0xc0	2	First content record number Number of first text record. Normally 1.
-        private static Attr FirstContentRecordNumberAttr => new(2, mobiHeadAttrs);
+        private static readonly Attr FirstContentRecordNumberAttr = new(2, mobiHeadAttrs);
 
         //194	0xc2	2	Last content record number  Number of last image record or number of last text record if it contains no images.Includes Image, DATP, HUFF, DRM.
-        private static Attr LastContentRecordNumberAttr => new(2, mobiHeadAttrs);
+        private static readonly Attr LastContentRecordNumberAttr = new(2, mobiHeadAttrs);
 
         internal long PreviousHeaderPosition { get; set; }
 

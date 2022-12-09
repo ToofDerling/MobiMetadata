@@ -6,35 +6,35 @@ namespace MobiMetadata
     {
         private static readonly List<Attr> pdbHeadAttrs = new();
 
-        private static Attr NameAttr => new(32, pdbHeadAttrs);
+        private static readonly Attr NameAttr = new(32, pdbHeadAttrs);
 
-        private static Attr AttributesAttr => new(2, pdbHeadAttrs);
+        private static readonly Attr AttributesAttr = new(2, pdbHeadAttrs);
 
-        private static Attr VersionAttr => new(2, pdbHeadAttrs);
+        private static readonly Attr VersionAttr = new(2, pdbHeadAttrs);
 
-        private static Attr CreationDateAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr CreationDateAttr = new(4, pdbHeadAttrs);
 
-        private static Attr ModificationDateAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr ModificationDateAttr = new(4, pdbHeadAttrs);
 
-        private static Attr LastBackupDateAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr LastBackupDateAttr = new(4, pdbHeadAttrs);
 
-        private static Attr ModificationNumberAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr ModificationNumberAttr = new(4, pdbHeadAttrs);
 
-        private static Attr AppInfoIDAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr AppInfoIDAttr = new(4, pdbHeadAttrs);
 
-        private static Attr SortInfoIDAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr SortInfoIDAttr = new(4, pdbHeadAttrs);
 
-        private static Attr TypeAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr TypeAttr = new(4, pdbHeadAttrs);
 
-        private static Attr CreatorAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr CreatorAttr = new(4, pdbHeadAttrs);
 
-        private static Attr UniqueIDSeedAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr UniqueIDSeedAttr = new(4, pdbHeadAttrs);
 
-        private static Attr NextRecordListIDAttr => new(4, pdbHeadAttrs);
+        private static readonly Attr NextRecordListIDAttr = new(4, pdbHeadAttrs);
 
-        private static Attr NumRecordsAttr => new(2);
+        private static readonly Attr NumRecordsAttr = new(2);
 
-        private static Attr GapToDataAttr => new(2);
+        private static readonly Attr GapToDataAttr = new(2);
 
         private PDBRecordInfo[] _recordInfoList;
 
