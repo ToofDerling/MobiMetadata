@@ -131,7 +131,7 @@ namespace MobiMetadata
             return memory;
         }
 
-        public virtual async Task<bool> WriteDataAsync(Stream toStream, string recordId = null, string file = null)
+        public virtual async Task<bool> WriteDataAsync(Stream toStream, string recordId = null, Stream additionalStream = null)
         {
             var bytes = ArrayPool<byte>.Shared.Rent(_len);
             try
@@ -150,12 +150,9 @@ namespace MobiMetadata
 
                 await toStream.WriteAsync(memory);
 
-                if (file != null)
+                if (additionalStream != null)
                 {
-                    using var fileStream
-                        = new FileStream(file, FileMode.Create, FileAccess.Write, FileShare.None, 0, FileOptions.Asynchronous | FileOptions.SequentialScan);
-
-                    await fileStream.WriteAsync(memory);
+                    await additionalStream.WriteAsync(memory);
                 }
 
                 return true;
