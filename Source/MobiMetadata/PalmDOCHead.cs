@@ -31,7 +31,7 @@
             Position = stream.Position;
 
             var attrLen = palmDocHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadAsync(stream, attrLen);
+            await SkipOrReadHeaderDataAsync(stream, attrLen);
         }
 
         //Properties

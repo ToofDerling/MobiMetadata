@@ -33,7 +33,7 @@
 
         protected Memory<byte> HeaderData { get; set; }
 
-        protected async Task SkipOrReadAsync(Stream stream, int length)
+        protected async Task SkipOrReadHeaderDataAsync(Stream stream, int length)
         {
             if (SkipProperties)
             {
@@ -41,11 +41,11 @@
             }
             else
             {
-                await ReadAsync(stream, length);
+                await ReadHeaderDataAsync(stream, length);
             }
         }
 
-        protected async Task ReadAsync(Stream stream, int length)
+        protected async Task ReadHeaderDataAsync(Stream stream, int length)
         {
             HeaderData = new byte[length];
             await stream.ReadAsync(HeaderData);

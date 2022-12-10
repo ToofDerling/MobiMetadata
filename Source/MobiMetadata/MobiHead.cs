@@ -114,7 +114,7 @@ namespace MobiMetadata
             var mobiHeaderOffset = stream.Position;
 
             var attrLen = mobiHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadAsync(stream, attrLen);
+            await SkipOrReadHeaderDataAsync(stream, attrLen);
 
             if (IdentifierAsString != "MOBI")
             {

@@ -19,7 +19,7 @@ namespace MobiMetadata
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = exthHeadAttrs.Sum(x => x.Length);
-            await ReadAsync(stream, attrLen);
+            await ReadHeaderDataAsync(stream, attrLen);
 
             if (IdentifierAsString != "EXTH")
             {

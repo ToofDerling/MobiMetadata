@@ -53,7 +53,7 @@ namespace MobiMetadata
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = pdbHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadAsync(stream, attrLen);
+            await SkipOrReadHeaderDataAsync(stream, attrLen);
 
             NumRecordsData = new byte[NumRecordsAttr.Length];
             await stream.ReadAsync(NumRecordsData);
