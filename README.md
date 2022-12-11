@@ -9,7 +9,13 @@ MobiMetadata targets .NET 6.0, it uses a lot of recent language features and is 
 <pre>
 var stream = File.Open(azwFile);
 var metadata = MobiMetadata();
+
+// This will read all properties and records (except for image records) in all headers 
 await metadata.ReadMetadataAsync(stream);
+
+var title = metadata.MobiHeader.FullName;
+var updatedTitle = metadata.MobiHeader.ExthHeader.UpdatedTitle;
+var publisher = metadata.MobiHeader.ExthHeader.Publisher;
 </pre>
 
 **Credits.**
