@@ -131,6 +131,11 @@ namespace MobiMetadata
             return memory;
         }
 
+        public virtual async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream)
+        {
+            return await WriteDataAsync(toStream, ImageRecordHD.RecordId, additionalStream);
+        }
+
         public virtual async Task<bool> WriteDataAsync(Stream toStream, string recordId = null, Stream additionalStream = null)
         {
             var bytes = ArrayPool<byte>.Shared.Rent(_len);
