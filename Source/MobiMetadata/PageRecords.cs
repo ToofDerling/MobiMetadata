@@ -23,8 +23,7 @@
         public RescRecord RescRecord { get; set; }
 
         public PageRecords(Stream stream, PDBRecordInfo[] pdbRecords, ImageType imageType,
-            uint firstImageIndex, ushort lastImageIndex,
-            uint coverIndexOffset, uint thumbIndexOffset)
+            uint firstImageIndex, ushort lastImageIndex, uint coverIndexOffset, uint thumbIndexOffset)
         {
             ImageType = imageType;
 
@@ -70,16 +69,18 @@
             }
         }
 
-        public void AnalyzePageRecords()
+        public async Task AnalyzePageRecordsAsync()
         {
             // Search backwards for the RESC record 
             var rescIndex = _allRecords.Count - 1;
             for (; rescIndex >= 0; rescIndex--)
             {
                 var record = _allRecords[rescIndex];
-                if (record.TryGetRescRecord(out var rescRecord))
+                
+                var rescRecord = await record.GetRescRecordAsync();
+                if (rescRecord != null)
                 {
-                    rescRecord.ParseXml();
+                    await rescRecord.ParseXmlAsync();
                     RescRecord = rescRecord;
 
                     break;
@@ -95,7 +96,7 @@
             if (_allRecords.Count == RescRecord.PageCount)
             {
                 var lastRecord = _allRecords.Count - 1;
-                if (_allRecords[lastRecord].IsDatpRecord())
+                if (await _allRecords[lastRecord].IsDatpRecordAsync())
                 {
                     _allRecords.RemoveAt(lastRecord);
                     RescRecord.AdjustPageCountBy(-1);
@@ -112,7 +113,7 @@
                     var rec = restOfRecords[i];
 
                     // The DATP record
-                    if (rec.IsDatpRecord())
+                    if (await rec.IsDatpRecordAsync())
                     {
                         DatpRecord = rec;
                         restOfRecords[i] = null;
@@ -140,7 +141,7 @@
             }
         }
 
-        public void AnalyzePageRecordsHD(int pageCount)
+        public async Task AnalyzePageRecordsHDAsync(int pageCount)
         {
             if (_allRecords.Count > pageCount)
             {
@@ -151,7 +152,7 @@
                     var rec = restOfRecords[i];
 
                     // The kindle:embed record
-                    if (rec.IsKindleEmbedRecord())
+                    if (await rec.IsKindleEmbedRecordAsync())
                     {
                         KindleEmbedRecord = rec;
                         restOfRecords[i] = null;

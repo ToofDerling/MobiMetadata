@@ -4,86 +4,43 @@ namespace MobiMetadata
 {
     public class EXTHHead : BaseHead
     {
-        private readonly Attr IdentifierAttr = new(4);
+        private static readonly List<Attr> exthHeadAttrs = new();
 
-        public readonly Attr HeaderLengthAttr = new(4);
+        private static readonly Attr IdentifierAttr = new(4, exthHeadAttrs);
 
-        public readonly Attr RecordCountAttr = new(4);
+        private static readonly Attr HeaderLengthAttr = new(4, exthHeadAttrs);
 
-        public readonly Attr AuthorAttrAttr = new(0, 100);
-
-        public readonly Attr PublisherAttr = new(0, 101);
-
-        public readonly Attr ImprintAttr = new(0, 102);
-
-        public readonly Attr DescriptionAttr = new(0, 103);
-
-        public readonly Attr IBSNAttr = new(0, 104);
-
-        public readonly Attr SubjectAttr = new(0, 105);
-
-        public readonly Attr PublishedDateAttr = new(0, 106);
-
-        public readonly Attr ReviewAttr = new(0, 107);
-
-        public readonly Attr ContributorAttr = new(0, 108);
-
-        public readonly Attr RightsAttr = new(0, 109);
-
-        public readonly Attr SubjectCodeAttr = new(0, 110);
-
-        public readonly Attr TypeAttr = new(0, 111);
-
-        public readonly Attr SourceAttr = new(0, 112);
-
-        public readonly Attr ASINAttr = new(0, 113);
-
-        public readonly Attr VersionNumberAttr = new(0, 114);
-
-        public readonly Attr RetailPriceAttr = new(0, 118);
-
-        public readonly Attr RetailPriceCurrencyAttr = new(0, 119);
-
-        public readonly Attr Kf8BoundaryOffsetAttr = new(0, 121);
-
-        public readonly Attr BookTypeAttr = new(0, 123);
-
-        public readonly Attr RescOffsetAttr = new(0, 131);
-
-        public readonly Attr DictionaryShortNameAttr = new(0, 200);
-
-        public readonly Attr CoverOffsetAttr = new(0, 201);
-
-        public readonly Attr ThumbOffsetAttr = new(0, 202);
-
-        public readonly Attr HasFakeCoverAttr = new(0, 203);
-
-        public readonly Attr CDETypeAttr = new(0, 501);
-
-        public readonly Attr UpdatedTitleAttr = new(0, 503);
-
-        public readonly Attr ASIN2Attr = new(0, 504);
+        private static readonly Attr RecordCountAttr = new(4, exthHeadAttrs);
 
         private EXTHRecord[] _recordList;
+        
+        private Memory<byte> RecordsData { get; set; }
 
-        internal override void ReadHeader(Stream stream)
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
-            Read(stream, IdentifierAttr);
+            var attrLen = exthHeadAttrs.Sum(x => x.Length);
+            await ReadHeaderDataAsync(stream, attrLen);
 
             if (IdentifierAsString != "EXTH")
             {
                 throw new MobiMetadataException("Did not get expected EXTH identifier");
             }
 
-            ReadOrSkip(stream, HeaderLengthAttr);
+            RecordsData = new byte[HeaderLength - attrLen];
+            await stream.ReadAsync(RecordsData);
 
-            Read(stream, RecordCountAttr);
-            var recordTypesToRead = GetExthRecordTypesToRead();
+            var recordPos = 0;
+            var recordCount = RecordCount;
 
-            _recordList = new EXTHRecord[RecordCount];
-            for (int i = 0; i < RecordCount; i++)
+            _recordList = new EXTHRecord[recordCount];
+
+            for (int i = 0; i < recordCount; i++)
             {
-                _recordList[i] = new EXTHRecord(stream, recordTypesToRead);
+                var exthRecord = new EXTHRecord(RecordsData, recordPos);
+
+                _recordList[i] = exthRecord;
+
+                recordPos += exthRecord.Size;
             }
         }
 
@@ -109,11 +66,11 @@ namespace MobiMetadata
         }
 
         //Properties
-        public string IdentifierAsString => Encoding.UTF8.GetString(IdentifierAttr.Data).Replace("\0", string.Empty);
+        public string IdentifierAsString => Encoding.UTF8.GetString(GetPropData(IdentifierAttr).Span).Replace("\0", string.Empty);
 
-        public uint HeaderLength => Converter.ToUInt32(HeaderLengthAttr.Data);
+        public uint HeaderLength => Converter.ToUInt32(GetPropData(HeaderLengthAttr).Span);
 
-        public uint RecordCount => Converter.ToUInt32(RecordCountAttr.Data);
+        public uint RecordCount => Converter.ToUInt32(GetPropData(RecordCountAttr).Span);
 
         public string Author => GetRecordAsString(100);
 
@@ -172,16 +129,16 @@ namespace MobiMetadata
         private string GetRecordAsString(uint recordType)
         {
             var record = GetRecord(recordType);
-            return record != null ? Encoding.UTF8.GetString(record.RecordData) : default;
+            return record != null ? Encoding.UTF8.GetString(record.RecordData.Span) : default;
         }
 
         private uint GetRecordAsUint(uint recordType)
         {
             var record = GetRecord(recordType);
-            return record != null ? Converter.ToUInt32(record.RecordData) : uint.MaxValue;
+            return record != null ? Converter.ToUInt32(record.RecordData.Span) : uint.MaxValue;
         }
 
-        private EXTHRecord GetRecord(uint recordType)
+        private EXTHRecord? GetRecord(uint recordType)
         {
             return _recordList.FirstOrDefault(rec => rec.RecordType == recordType);
         }

@@ -4,107 +4,121 @@ namespace MobiMetadata
 {
     public class PDBHead : BaseHead
     {
-        public readonly Attr NameAttr = new(32);
+        private static readonly List<Attr> pdbHeadAttrs = new();
 
-        public readonly Attr AttributesAttr = new(2);
+        private static readonly Attr NameAttr = new(32, pdbHeadAttrs);
 
-        public readonly Attr VersionAttr = new(2);
+        private static readonly Attr AttributesAttr = new(2, pdbHeadAttrs);
 
-        public readonly Attr CreationDateAttr = new(4);
+        private static readonly Attr VersionAttr = new(2, pdbHeadAttrs);
 
-        public readonly Attr ModificationDateAttr = new(4);
+        private static readonly Attr CreationDateAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr LastBackupDateAttr = new(4);
+        private static readonly Attr ModificationDateAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr ModificationNumberAttr = new(4);
+        private static readonly Attr LastBackupDateAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr AppInfoIDAttr = new(4);
+        private static readonly Attr ModificationNumberAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr SortInfoIDAttr = new(4);
+        private static readonly Attr AppInfoIDAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr TypeAttr = new(4);
+        private static readonly Attr SortInfoIDAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr CreatorAttr = new(4);
+        private static readonly Attr TypeAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr UniqueIDSeedAttr = new(4);
+        private static readonly Attr CreatorAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr NextRecordListIDAttr = new(4);
+        private static readonly Attr UniqueIDSeedAttr = new(4, pdbHeadAttrs);
 
-        public readonly Attr NumRecordsAttr = new(2);
+        private static readonly Attr NextRecordListIDAttr = new(4, pdbHeadAttrs);
 
-        private readonly Attr GapToDataAttr = new(2);
+        private static readonly Attr NumRecordsAttr = new(2);
+
+        private static readonly Attr GapToDataAttr = new(2);
 
         private PDBRecordInfo[] _recordInfoList;
 
-        public bool RecordInfoIsEmpty { get; set; }
-
         public PDBRecordInfo[] Records => _recordInfoList;
 
-        internal override void ReadHeader(Stream stream)
+        private Memory<byte> NumRecordsData { get; set; }
+
+        private Memory<byte> RecordsData { get; set; }
+
+        public PDBHead(bool skipProperties = false, bool skipRecords = false)
         {
-            ReadOrSkip(stream, NameAttr);
-            ReadOrSkip(stream, AttributesAttr);
-            ReadOrSkip(stream, VersionAttr);
-            ReadOrSkip(stream, CreationDateAttr);
-            ReadOrSkip(stream, ModificationDateAttr);
-            ReadOrSkip(stream, LastBackupDateAttr);
-            ReadOrSkip(stream, ModificationNumberAttr);
-            ReadOrSkip(stream, AppInfoIDAttr);
-            ReadOrSkip(stream, SortInfoIDAttr);
+            SkipProperties = skipProperties;
+            SkipRecords = skipRecords;
+        }
 
-            ReadOrSkip(stream, TypeAttr);
-            ReadOrSkip(stream, CreatorAttr);
-            ReadOrSkip(stream, UniqueIDSeedAttr);
-            ReadOrSkip(stream, NextRecordListIDAttr);
+        internal override async Task ReadHeaderAsync(Stream stream)
+        {
+            var attrLen = pdbHeadAttrs.Sum(x => x.Length);
+            await SkipOrReadHeaderDataAsync(stream, attrLen);
 
-            Read(stream, NumRecordsAttr);
-            int recordCount = Converter.ToInt16(NumRecordsAttr.Data);
+            NumRecordsData = new byte[NumRecordsAttr.Length];
+            await stream.ReadAsync(NumRecordsData);
 
-            var readRecordInfo = IsAttrToRead(NumRecordsAttr);
-            RecordInfoIsEmpty = !readRecordInfo;
+            var recordCount = NumRecords;
+            var recordDataSize = recordCount * PDBRecordInfo.PdbRecordLen;
 
-            _recordInfoList = new PDBRecordInfo[recordCount];
-            for (int i = 0; i < recordCount; i++)
+            if (SkipRecords)
             {
-                _recordInfoList[i] = new PDBRecordInfo(stream, readRecordInfo);
+                stream.Position += recordDataSize;
+            }
+            else
+            {
+                RecordsData = new byte[recordDataSize];
+                await stream.ReadAsync(RecordsData);
+
+                _recordInfoList = new PDBRecordInfo[recordCount];
+                var recordPos = 0;
+
+                for (int i = 0; i < recordCount; i++)
+                {
+                    var recordInfo = new PDBRecordInfo(RecordsData, recordPos);
+                    _recordInfoList[i] = recordInfo;
+
+                    recordPos += PDBRecordInfo.PdbRecordLen;
+                }
             }
 
-            Skip(stream, GapToDataAttr);
+            // Finally move on to next header
+            stream.Position += GapToDataAttr.Length;
         }
 
         public bool IsHDImageContainer => TypeAsString == "RBIN" && CreatorAsString == "CONT";
 
-        public string Name => Encoding.ASCII.GetString(NameAttr.Data).Replace("\0", string.Empty);
+        public string Name => Encoding.ASCII.GetString(GetPropData(NameAttr).Span).Replace("\0", string.Empty);
 
-        public ushort Attributes => Converter.ToUInt16(AttributesAttr.Data);
+        public ushort Attributes => Converter.ToUInt16(GetPropData(AttributesAttr).Span);
 
-        public ushort Version => Converter.ToUInt16(VersionAttr.Data);
+        public ushort Version => Converter.ToUInt16(GetPropData(VersionAttr).Span);
 
-        public uint CreationDate => Converter.ToUInt32(CreationDateAttr.Data);
+        public uint CreationDate => Converter.ToUInt32(GetPropData(CreationDateAttr).Span);
 
-        public uint ModificationDate => Converter.ToUInt32(CreationDateAttr.Data);
+        public uint ModificationDate => Converter.ToUInt32(GetPropData(ModificationDateAttr).Span);
 
-        public uint LastBackupDate => Converter.ToUInt32(LastBackupDateAttr.Data);
+        public uint LastBackupDate => Converter.ToUInt32(GetPropData(LastBackupDateAttr).Span);
 
-        public uint ModificationNumber => Converter.ToUInt32(ModificationNumberAttr.Data);
+        public uint ModificationNumber => Converter.ToUInt32(GetPropData(ModificationNumberAttr).Span);
 
-        public uint AppInfoID => Converter.ToUInt32(AppInfoIDAttr.Data);
+        public uint AppInfoID => Converter.ToUInt32(GetPropData(AppInfoIDAttr).Span);
 
-        public uint SortInfoID => Converter.ToUInt32(SortInfoIDAttr.Data);
+        public uint SortInfoID => Converter.ToUInt32(GetPropData(SortInfoIDAttr).Span);
 
-        public uint Type => Converter.ToUInt32(TypeAttr.Data);
+        public uint Type => Converter.ToUInt32(GetPropData(TypeAttr).Span);
 
-        public string TypeAsString => Encoding.ASCII.GetString(TypeAttr.Data).Replace("\0", string.Empty);
+        public string TypeAsString => Encoding.ASCII.GetString(GetPropData(TypeAttr).Span).Replace("\0", string.Empty);
 
-        public uint Creator => Converter.ToUInt32(CreatorAttr.Data);
+        public uint Creator => Converter.ToUInt32(GetPropData(CreatorAttr).Span);
 
-        public string CreatorAsString => Encoding.ASCII.GetString(CreatorAttr.Data).Replace("\0", string.Empty);
+        public string CreatorAsString => Encoding.ASCII.GetString(GetPropData(CreatorAttr).Span).Replace("\0", string.Empty);
 
-        public uint UniqueIDSeed => Converter.ToUInt32(UniqueIDSeedAttr.Data);
+        public uint UniqueIDSeed => Converter.ToUInt32(GetPropData(UniqueIDSeedAttr).Span);
 
-        public ushort NumRecords => Converter.ToUInt16(NumRecordsAttr.Data);
+        public ushort NumRecords => Converter.ToUInt16(NumRecordsData.Span);
 
-        public ushort GapToData => Converter.ToUInt16(GapToDataAttr.Data);
+        //public ushort GapToData => Converter.ToUInt16(GapToDataAttr.GetData(HeaderData).Span);
 
         public uint MobiHeaderSize => _recordInfoList.Length > 1
                                         ? _recordInfoList[1].RecordDataOffset - _recordInfoList[0].RecordDataOffset

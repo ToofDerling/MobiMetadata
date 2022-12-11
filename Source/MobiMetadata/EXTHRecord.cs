@@ -1,43 +1,37 @@
 ﻿namespace MobiMetadata
 {
-    public class EXTHRecord
+    public sealed class EXTHRecord : BaseRecord
     {
-        private readonly byte[] _recordTypeData = new byte[4];
-        private readonly byte[] _recordLength = new byte[4];
-        private readonly byte[] _recordData;
+        private const int _recordTypePos = 0;
+        private const int _recordTypeLen = 4;
 
-        public EXTHRecord(Stream stream, Dictionary<int, object> recordTypesToRead)
+        private const int _recordLengthPos = 4;
+        private const int _recordLengthLen = 4;
+
+        private const int _dataPos = 8;
+        private readonly int _dataLen;
+
+        public EXTHRecord(Memory<byte> recordsData, int recordPosition) : base(recordsData, recordPosition)
         {
-            stream.Read(_recordTypeData, 0, _recordTypeData.Length);
-
-            stream.Read(_recordLength, 0, _recordLength.Length);
-            if (RecordLength < 8)
+            var recordLength = (int)RecordLength;
+            if (recordLength < 8)
             {
                 throw new MobiMetadataException("Invalid EXTH record length");
             }
 
-            var dataLength = RecordLength - 8;
-
-            if (recordTypesToRead == null || recordTypesToRead.ContainsKey((int)RecordType))
-            {
-                _recordData = new byte[dataLength];
-                stream.Read(_recordData, 0, _recordData.Length);
-            }
-            else
-            {
-                stream.Position += dataLength;
-            }
+            var dataLength = recordLength - (_recordTypeLen + _recordLengthLen);
+            _dataLen = dataLength;
         }
 
         //Properties
-        public int DataLength => _recordData.Length;
+        public int DataLength => _dataLen;
 
         public int Size => DataLength + 8;
 
-        public uint RecordLength => Converter.ToUInt32(_recordLength);
+        public uint RecordLength => Converter.ToUInt32(GetPropertyData(_recordLengthPos, _recordLengthLen).Span);
 
-        public uint RecordType => Converter.ToUInt32(_recordTypeData);
+        public uint RecordType => Converter.ToUInt32(GetPropertyData(_recordTypePos, _recordTypeLen).Span);
 
-        public byte[] RecordData => _recordData;
+        public Memory<byte> RecordData => GetPropertyData(_dataPos, _dataLen);
     }
 }

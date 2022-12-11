@@ -1,6 +1,4 @@
-﻿using AzwConverter;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class MobiMetadata
     {
@@ -18,50 +16,61 @@ namespace MobiMetadata
 
         public PageRecords? PageRecordsHD { get; private set; }
 
-        public MobiMetadata(Stream stream, PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
-            EXTHHead exthHeader = null, bool throwIfNoExthHeader = false)
+        private readonly bool _throwIfNoExthHeader;
+
+        public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
+            bool throwIfNoExthHeader = false)
         {
-            _pdbHeader = pdbHeader ?? MobiHeaderFactory.CreateReadAll<PDBHead>();
-            _pdbHeader.ReadHeader(stream);
+            _pdbHeader = pdbHeader ?? new PDBHead();
 
-            _palmDocHeader = palmDocHeader ?? MobiHeaderFactory.CreateReadAll<PalmDOCHead>();
-            _palmDocHeader.ReadHeader(stream);
+            _palmDocHeader = palmDocHeader ?? new PalmDOCHead();
 
-            _mobiHeader = mobiHeader ?? MobiHeaderFactory.CreateReadAll<MobiHead>();
+            _mobiHeader = mobiHeader ?? new MobiHead();
 
+            _throwIfNoExthHeader = throwIfNoExthHeader;
+        }
+
+        private Stream _stream;
+
+        public async Task ReadMetadataAsync(Stream stream)
+        {
+            _stream = stream;
+
+            await _pdbHeader.ReadHeaderAsync(stream);
+
+            await _palmDocHeader.ReadHeaderAsync(stream);
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
-            _mobiHeader.SetExthHeader(exthHeader);
 
             // This also reads the exthheader
-            _mobiHeader.ReadHeader(stream);
+            await _mobiHeader.ReadHeaderAsync(stream);
 
-            if (_mobiHeader.ExthHeader == null)
+            if (_mobiHeader.ExthHeader == null && _throwIfNoExthHeader)
             {
-                if (throwIfNoExthHeader)
-                {
-                    throw new MobiMetadataException($"{mobiHeader.FullName}: No EXTHHeader");
-                }
-            }
-            else if (!_pdbHeader.RecordInfoIsEmpty)
-            {
-                var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
-                var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
-
-                PageRecords = new PageRecords(stream, _pdbHeader.Records, ImageType.SD,
-                    _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
-                    coverIndexOffset, thumbIndexOffset);
-
-                PageRecords.AnalyzePageRecords();
+                throw new MobiMetadataException($"No EXTHHeader");
             }
         }
 
-        public void ReadHDImageRecords(Stream hdContainerStream)
+        public async Task ReadImageRecordsAsync()
         {
-            var pdbHeader = MobiHeaderFactory.CreateReadAll<PDBHead>();
-            MobiHeaderFactory.ConfigureRead(pdbHeader, pdbHeader.TypeAttr, pdbHeader.CreatorAttr, 
-                pdbHeader.NumRecordsAttr);
-            
-            pdbHeader.ReadHeader(hdContainerStream);
+            if (PdbHeader.SkipRecords)
+            {
+                throw new MobiMetadataException($"Cannot read image records ({nameof(PdbHeader.SkipRecords)} is {PdbHeader.SkipRecords}).");
+            }
+
+            var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
+            var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
+
+            PageRecords = new PageRecords(_stream, _pdbHeader.Records, ImageType.SD,
+                _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
+                coverIndexOffset, thumbIndexOffset);
+
+            await PageRecords.AnalyzePageRecordsAsync();
+        }
+
+        public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
+        {
+            var pdbHeader = new PDBHead();
+            await pdbHeader.ReadHeaderAsync(hdContainerStream);
 
             if (!pdbHeader.IsHDImageContainer)
             {
@@ -72,7 +81,7 @@ namespace MobiMetadata
                 1, (ushort)(pdbHeader.Records.Length - 1),
                 MobiHeader.ExthHeader.CoverOffset, MobiHeader.ExthHeader.ThumbOffset);
 
-            PageRecordsHD.AnalyzePageRecordsHD(PageRecords.ContentRecords.Count);
+            await PageRecordsHD.AnalyzePageRecordsHDAsync(PageRecords.ContentRecords.Count);
         }
     }
 }

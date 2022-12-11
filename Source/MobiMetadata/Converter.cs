@@ -20,9 +20,21 @@ namespace MobiMetadata
         //    return BitConverter.ToInt64(CheckBytes(bytes), 0);
         //}
 
+        public static ushort ToUInt16(ReadOnlySpan<byte> bytes)
+        {
+            var res = BitConverter.ToUInt16(bytes);
+            return BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(res) : res;
+        }
+
         public static ushort ToUInt16(byte[] bytes)
         {
             var res = BitConverter.ToUInt16(bytes);
+            return BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(res) : res;
+        }
+
+        public static uint ToUInt32(ReadOnlySpan<byte> bytes)
+        {
+            var res = BitConverter.ToUInt32(bytes);
             return BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(res) : res;
         }
 

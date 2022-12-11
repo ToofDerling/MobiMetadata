@@ -4,75 +4,56 @@
     {
         public sealed class Attr
         {
-            public Attr(int length)
+            public Attr(int length, List<Attr> attrs = null)
             {
+                if (attrs != null)
+                {
+                    Position = attrs.Sum(a => a.Length);
+                    attrs.Add(this);
+                }
+
                 Length = length;
             }
 
-            public Attr(int length, int exthRecType) : this(length)
-            {
-                ExthRecType = exthRecType;
-            }
+            public int Position { get; set; }
 
-            public byte[]? Data { get; set; }
+            public Memory<byte> GetData(Memory<byte> memory)
+            { 
+                return memory.Slice(Position, Length);
+            }
 
             public int Length { get; private set; }
-
-            public int ExthRecType { get; private set; }
         }
 
-        private Dictionary<Attr, object>? attrsToRead;
+        public bool SkipProperties { get; set; }
 
-        protected Dictionary<int, object> GetExthRecordTypesToRead()
+        public bool SkipRecords { get; set; }
+
+        internal abstract Task ReadHeaderAsync(Stream stream);
+
+        protected Memory<byte> HeaderData { get; set; }
+
+        protected async Task SkipOrReadHeaderDataAsync(Stream stream, int length)
         {
-            if (attrsToRead == null)
+            if (SkipProperties)
             {
-                return null;
-            }
-
-            return attrsToRead.ToDictionary(x => x.Key.ExthRecType, x => (object)null);
-        }
-
-        protected void ReadOrSkip(Stream stream, Attr attr)
-        {
-            if (IsAttrToRead(attr))
-            {
-                Read(stream, attr);
+                stream.Position += length;
             }
             else
             {
-                Skip(stream, attr);
+                await ReadHeaderDataAsync(stream, length);
             }
         }
 
-        protected void Read(Stream stream, Attr attr)
+        protected async Task ReadHeaderDataAsync(Stream stream, int length)
         {
-            attr.Data = new byte[attr.Length];
-            stream.Read(attr.Data, 0, attr.Length);
+            HeaderData = new byte[length];
+            await stream.ReadAsync(HeaderData);
         }
 
-        protected void Skip(Stream stream, Attr attr)
+        protected Memory<byte> GetPropData(Attr attr)
         {
-            stream.Position += attr.Length;
+            return attr.GetData(HeaderData);
         }
-
-        internal void SetAttrsToRead(params Attr[] attrs)
-        {
-            attrsToRead = new Dictionary<Attr, object>();
-
-            if (attrs != null)
-            {
-                foreach (var attr in attrs)
-                {
-                    attrsToRead[attr] = null;
-                }
-            }
-        }
-
-        internal bool IsReadAll => attrsToRead == null;
-
-        protected bool IsAttrToRead(Attr attr) => attrsToRead == null || attrsToRead.ContainsKey(attr);
-
-        internal abstract void ReadHeader(Stream stream);
     }
 }

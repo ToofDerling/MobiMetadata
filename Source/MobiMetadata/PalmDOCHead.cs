@@ -2,38 +2,40 @@
 {
     public class PalmDOCHead : BaseHead
     {
-        public readonly Attr CompressionAttr = new(2);
+        private static readonly List<Attr> palmDocHeadAttrs = new();
 
-        public readonly Attr Unused0Attr = new(2);
-        
-        public readonly Attr TextLengthAttr = new(4);
-        
-        public readonly Attr RecordCountAttr = new(2);
-        
-        public readonly Attr RecordSizeAttr = new(2);
-        
-        public readonly Attr EncryptionTypeAttr = new(2);
-        
-        public readonly Attr Unused1Attr = new(2);
+        private static readonly Attr CompressionAttr = new(2, palmDocHeadAttrs);
+
+        private static readonly Attr Unused0Attr = new(2, palmDocHeadAttrs);
+
+        private static readonly Attr TextLengthAttr = new(4, palmDocHeadAttrs);
+
+        private static readonly Attr RecordCountAttr = new(2, palmDocHeadAttrs);
+
+        private static readonly Attr RecordSizeAttr = new(2, palmDocHeadAttrs);
+
+        private static readonly Attr EncryptionTypeAttr = new(2, palmDocHeadAttrs);
+
+        private static readonly Attr Unused1Attr = new(2, palmDocHeadAttrs);
 
         public long Position { get; private set; }
 
-        internal override void ReadHeader(Stream stream)
+        public PalmDOCHead(bool skipProperties = false, bool skipRecords = false)
+        {
+            SkipProperties = skipProperties;
+            SkipRecords = skipRecords;
+        }
+
+        internal override async Task ReadHeaderAsync(Stream stream)
         {
             Position = stream.Position;
 
-            ReadOrSkip(stream, CompressionAttr);
-            Skip(stream, Unused0Attr);
-            ReadOrSkip(stream, TextLengthAttr);
-            ReadOrSkip(stream, RecordCountAttr);
-
-            ReadOrSkip(stream, RecordSizeAttr);
-            ReadOrSkip(stream, EncryptionTypeAttr);
-            Skip(stream, Unused1Attr);
+            var attrLen = palmDocHeadAttrs.Sum(x => x.Length);
+            await SkipOrReadHeaderDataAsync(stream, attrLen);
         }
 
         //Properties
-        public ushort Compression => Converter.ToUInt16(CompressionAttr.Data);
+        public ushort Compression => Converter.ToUInt16(GetPropData(CompressionAttr).Span);
 
         public string CompressionAsString => Compression switch
         {
@@ -43,13 +45,13 @@
             _ => $"Unknown (0)",
         };
 
-        public uint TextLength => Converter.ToUInt32(TextLengthAttr.Data);
+        public uint TextLength => Converter.ToUInt32(GetPropData(TextLengthAttr).Span);
 
-        public ushort RecordCount => Converter.ToUInt16(RecordCountAttr.Data);
+        public ushort RecordCount => Converter.ToUInt16(GetPropData(RecordCountAttr).Span);
 
-        public ushort RecordSize => Converter.ToUInt16(RecordSizeAttr.Data);
+        public ushort RecordSize => Converter.ToUInt16(GetPropData(RecordSizeAttr).Span);
 
-        public ushort EncryptionType => Converter.ToUInt16(EncryptionTypeAttr.Data);
+        public ushort EncryptionType => Converter.ToUInt16(GetPropData(EncryptionTypeAttr).Span);
 
         public string EncryptionTypeAsString
         {
