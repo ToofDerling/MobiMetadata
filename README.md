@@ -16,6 +16,26 @@ await metadata.ReadMetadataAsync(stream);
 var title = metadata.MobiHeader.FullName;
 var updatedTitle = metadata.MobiHeader.ExthHeader.UpdatedTitle;
 var publisher = metadata.MobiHeader.ExthHeader.Publisher;
+
+// Read the SD images in the azw file
+await metadata.ReadImageRecordsAsync();
+
+// Read the HD images in the azw.res file
+var hdStream = File.Open(azwResFile);
+await metadata.ReadHDImageRecordsAsync(hdStream);
+
+// Save the HD cover if available
+if (metadata.PageRecordsHD != null && metadata.PageRecordsHD.CoverRecord != null 
+    && await hdImageRecords.CoverRecord.TryWriteHDImageDataAsync(yourStream))
+{
+   // Got a HD cover
+}
+
+// Save the SD cover if available
+if (metadata.PageRecords.CoverRecord != null
+{
+    await sdImageRecords.CoverRecord.WriteDataAsync(yourStream);
+}
 </pre>
 
 More to come...
