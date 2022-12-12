@@ -26,7 +26,7 @@ await metadata.ReadHDImageRecordsAsync(hdStream);
 
 // Save the HD cover if available
 if (metadata.PageRecordsHD != null && metadata.PageRecordsHD.CoverRecord != null 
-    && await hdImageRecords.CoverRecord.TryWriteHDImageDataAsync(yourStream))
+    && await metadata.PageRecordsHD.CoverRecord.TryWriteHDImageDataAsync(yourStream))
 {
    // Got a HD cover
 }
