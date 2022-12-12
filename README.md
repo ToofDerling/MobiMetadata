@@ -32,7 +32,7 @@ if (metadata.PageRecordsHD != null && metadata.PageRecordsHD.CoverRecord != null
 }
 
 // Save the SD cover if available
-if (metadata.PageRecords.CoverRecord != null
+if (metadata.PageRecords.CoverRecord != null)
 {
     await sdImageRecords.CoverRecord.WriteDataAsync(yourStream);
 }
