@@ -164,15 +164,15 @@ namespace MobiMetadata
         //Properties
         public int ExthHeaderSize => ExthHeader == null ? -1 : ExthHeader.Size;
 
-        public string FullName => Encoding.UTF8.GetString(FullNameData.Span);
+        public string FullName => GetDataAsUtf8(FullNameData);
 
-        public string IdentifierAsString => Encoding.UTF8.GetString(GetPropData(IdentifierAttr).Span).Replace("\0", string.Empty);
+        public string IdentifierAsString => GetPropAsUtf8(IdentifierAttr).Replace("\0", string.Empty);
 
-        public uint HeaderLength => Converter.ToUInt32(GetPropData(HeaderLengthAttr).Span);
+        public uint HeaderLength => GetPropAsUint(HeaderLengthAttr);
 
-        public uint FirstImageIndex => Converter.ToUInt32(GetPropData(FirstImageIndexAttr).Span);
+        public uint FirstImageIndex => GetPropAsUint(FirstImageIndexAttr);
 
-        public uint MobiType => Converter.ToUInt32(GetPropData(MobiTypeAttr).Span);
+        public uint MobiType => GetPropAsUint(MobiTypeAttr);
 
         public string MobiTypeAsString => MobiType switch
         {
@@ -188,60 +188,60 @@ namespace MobiMetadata
             516 => "PPT",
             517 => "TEXT",
             518 => "HTML",
-            _ => $"Unknown (0)",
+            _ => $"Unknown",
         };
 
-        public uint TextEncoding => Converter.ToUInt32(GetPropData(TextEncodingAttr).Span);
+        public uint TextEncoding => GetPropAsUint(TextEncodingAttr);
 
         public string TextEncodingAsString => TextEncoding switch
         {
             1252 => "Cp1252",
             65001 => "UTF-8",
-            _ => null,
+            _ => null!,
         };
 
-        public uint UniqueID => Converter.ToUInt32(GetPropData(UniqueIDAttr).Span);
+        public uint UniqueID => GetPropAsUint(UniqueIDAttr);
 
-        public uint FileVersion => Converter.ToUInt32(GetPropData(FileVersionAttr).Span);
+        public uint FileVersion => GetPropAsUint(FileVersionAttr);
 
-        public uint OrthographicIndex => Converter.ToUInt32(GetPropData(OrthographicIndexAttr).Span);
+        public uint OrthographicIndex => GetPropAsUint(OrthographicIndexAttr);
 
-        public uint InflectionIndex => Converter.ToUInt32(GetPropData(InflectionIndexAttr).Span);
+        public uint InflectionIndex => GetPropAsUint(InflectionIndexAttr);
 
-        public uint IndexNames => Converter.ToUInt32(GetPropData(IndexNamesAttr).Span);
+        public uint IndexNames => GetPropAsUint(IndexNamesAttr);
 
-        public uint IndexKeys => Converter.ToUInt32(GetPropData(IndexKeysAttr).Span);
+        public uint IndexKeys => GetPropAsUint(IndexKeysAttr);
 
-        public uint ExtraIndex0 => Converter.ToUInt32(GetPropData(ExtraIndex0Attr).Span);
+        public uint ExtraIndex0 => GetPropAsUint(ExtraIndex0Attr);
 
-        public uint ExtraIndex1 => Converter.ToUInt32(GetPropData(ExtraIndex1Attr).Span);
+        public uint ExtraIndex1 => GetPropAsUint(ExtraIndex1Attr);
 
-        public uint ExtraIndex2 => Converter.ToUInt32(GetPropData(ExtraIndex2Attr).Span);
+        public uint ExtraIndex2 => GetPropAsUint(ExtraIndex2Attr);
 
-        public uint ExtraIndex3 => Converter.ToUInt32(GetPropData(ExtraIndex3Attr).Span);
+        public uint ExtraIndex3 => GetPropAsUint(ExtraIndex3Attr);
 
-        public uint ExtraIndex4 => Converter.ToUInt32(GetPropData(ExtraIndex4Attr).Span);
+        public uint ExtraIndex4 => GetPropAsUint(ExtraIndex4Attr);
 
-        public uint ExtraIndex5 => Converter.ToUInt32(GetPropData(ExtraIndex5Attr).Span);
+        public uint ExtraIndex5 => GetPropAsUint(ExtraIndex5Attr);
 
-        public uint FirstNonBookIndex => Converter.ToUInt32(GetPropData(FirstNonBookIndexAttr).Span);
+        public uint FirstNonBookIndex => GetPropAsUint(FirstNonBookIndexAttr);
 
-        public uint FullNameOffset => Converter.ToUInt32(GetPropData(FullNameOffsetAttr).Span);
+        public uint FullNameOffset => GetPropAsUint(FullNameOffsetAttr);
 
-        public uint FullNameLength => Converter.ToUInt32(GetPropData(FullNameLengthAttr).Span);
+        public uint FullNameLength => GetPropAsUint(FullNameLengthAttr);
 
-        public uint MinVersion => Converter.ToUInt32(GetPropData(MinVersionAttr).Span);
+        public uint MinVersion => GetPropAsUint(MinVersionAttr);
 
-        public uint HuffmanRecordOffset => Converter.ToUInt32(GetPropData(HuffmanRecordOffsetAttr).Span);
+        public uint HuffmanRecordOffset => GetPropAsUint(HuffmanRecordOffsetAttr);
 
-        public uint HuffmanRecordCount => Converter.ToUInt32(GetPropData(HuffmanRecordCountAttr).Span);
+        public uint HuffmanRecordCount => GetPropAsUint(HuffmanRecordCountAttr);
 
-        public uint HuffmanTableOffset => Converter.ToUInt32(GetPropData(HuffmanTableOffsetAttr).Span);
+        public uint HuffmanTableOffset => GetPropAsUint(HuffmanTableOffsetAttr);
 
-        public uint HuffmanTableLength => Converter.ToUInt32(GetPropData(HuffmanTableLengthAttr).Span);
+        public uint HuffmanTableLength => GetPropAsUint(HuffmanTableLengthAttr);
 
-        public ushort FirstContentRecordNumber => Converter.ToUInt16(GetPropData(FirstContentRecordNumberAttr).Span);
+        public ushort FirstContentRecordNumber => GetPropAsUshort(FirstContentRecordNumberAttr);
 
-        public ushort LastContentRecordNumber => Converter.ToUInt16(GetPropData(LastContentRecordNumberAttr).Span);
+        public ushort LastContentRecordNumber => GetPropAsUshort(LastContentRecordNumberAttr);
     }
 }

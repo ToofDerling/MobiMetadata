@@ -1,12 +1,11 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Text;
 using System.Xml;
 
 namespace MobiMetadata
 {
     public class RescRecord : PageRecord
     {
-        public static string RecordId => "RESC";
-
         private static XmlReaderSettings XmlReaderSettings => new()
         {
             IgnoreComments = true,
@@ -49,38 +48,51 @@ namespace MobiMetadata
 
         public async Task ParseXmlAsync()
         {
-            var xmlStr = await GetDataAsStringAsync(skip: RecordId.Length);
+            var len = _len - RecordId.RESC.Length;
 
-            xmlStr = xmlStr.Replace("\0", null).Trim();
-
-            var xmlBegin = xmlStr.IndexOf("<");
-            var xmlEnd = xmlStr.LastIndexOf(">");
-
-            xmlStr = xmlStr.Substring(xmlBegin, xmlEnd - xmlBegin + 1);
-
-            int pageCount = 0;
-
-            var strReader = new StringReader(xmlStr);
-            using (XmlReader xmlReader = XmlReader.Create(strReader, XmlReaderSettings))
+            var bytes = ArrayPool<byte>.Shared.Rent(len);
+            try
             {
-                await xmlReader.ReadAsync();
-                while (await xmlReader.ReadAsync())
-                {
-                    if (xmlReader.Name == "itemref")
-                    {
-                        var idRef = xmlReader.GetAttribute("idref");
-                        var skelId = xmlReader.GetAttribute("skelid");
+                var data = await ReadDataAsync(bytes, len);
 
-                        if (idRef != null && skelId != null)
+                var xmlStr = Encoding.UTF8.GetString(data.Span);
+                xmlStr = xmlStr.Replace("\0", null).Trim();
+
+                var xmlBegin = xmlStr.IndexOf("<");
+                var xmlEnd = xmlStr.LastIndexOf(">");
+
+                xmlStr = xmlStr.Substring(xmlBegin, xmlEnd - xmlBegin + 1);
+
+                int pageCount = 0;
+
+                var strReader = new StringReader(xmlStr);
+
+                using (XmlReader xmlReader = XmlReader.Create(strReader, XmlReaderSettings))
+                {
+                    await xmlReader.ReadAsync();
+                    while (await xmlReader.ReadAsync())
+                    {
+                        if (xmlReader.Name == "itemref")
                         {
-                            pageCount++;
+                            var idRef = xmlReader.GetAttribute("idref");
+                            var skelId = xmlReader.GetAttribute("skelid");
+
+                            if (idRef != null && skelId != null)
+                            {
+                                pageCount++;
+                            }
                         }
                     }
                 }
+
+                RawXml = xmlStr;
+                PageCount = pageCount;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(bytes);
             }
 
-            RawXml = xmlStr;
-            PageCount = pageCount;
         }
     }
 }

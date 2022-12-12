@@ -1,4 +1,6 @@
-﻿namespace MobiMetadata
+﻿using System.Text;
+
+namespace MobiMetadata
 {
     public abstract class BaseHead
     {
@@ -54,6 +56,26 @@
         protected Memory<byte> GetPropData(Attr attr)
         {
             return attr.GetData(HeaderData);
+        }
+
+        protected string GetPropAsUtf8(Attr attr)
+        {
+            return GetDataAsUtf8(GetPropData(attr));
+        }
+
+        protected string GetDataAsUtf8(Memory<byte> memory)
+        {
+            return Encoding.UTF8.GetString(memory.Span);
+        }
+
+        protected uint GetPropAsUint(Attr attr)
+        {
+            return Converter.ToUInt32(GetPropData(attr).Span);
+        }
+
+        protected ushort GetPropAsUshort(Attr attr)
+        {
+            return Converter.ToUInt16(GetPropData(attr).Span);
         }
     }
 }

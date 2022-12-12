@@ -9,6 +9,17 @@ namespace MobiMetadata
         protected readonly long _pos;
         protected readonly int _len;
 
+        protected class RecordId
+        {
+            public static readonly Memory<byte> CRES = Encoding.ASCII.GetBytes("CRES");
+
+            public static readonly Memory<byte> KindleEmbed = Encoding.ASCII.GetBytes("kindle:embed");
+
+            public static readonly Memory<byte> DATP = Encoding.ASCII.GetBytes("DATP");
+
+            public static readonly Memory<byte> RESC = Encoding.ASCII.GetBytes("RESC");
+        }
+
         public PageRecord(Stream stream, long pos, uint len)
         {
             _stream = stream;
@@ -20,8 +31,8 @@ namespace MobiMetadata
         {
             _stream.Position = _pos;
 
-            RescRecord rescRecord = null;
-            if (!await IsRecordIdAsync(RescRecord.RecordId))
+            RescRecord rescRecord = null!;
+            if (!await IsRecordIdAsync(RecordId.RESC))
             {
                 return rescRecord;
             }
@@ -39,77 +50,39 @@ namespace MobiMetadata
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync("DATP");
+            return await IsRecordIdAsync(RecordId.DATP);
         }
 
         public async Task<bool> IsKindleEmbedRecordAsync()
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync("kindle:embed");
+            return await IsRecordIdAsync(RecordId.KindleEmbed);
         }
 
         public async Task<bool> IsCresRecordAsync()
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync("CRES");
+            return await IsRecordIdAsync(RecordId.CRES);
         }
 
         public int Length => _len;
 
-        private bool TestRecordId(string id, Memory<byte> memory)
+        protected async Task<bool> IsRecordIdAsync(Memory<byte> recordId)
         {
-            var slice = memory[..id.Length];
+            var idLen = recordId.Length;
 
-            var res = Encoding.ASCII.GetString(slice.Span) == id;
-
-            return res;
-        }
-
-#if !DEBUG
-        protected async Task<bool> IsRecordIdAsync(string id)
-        {
-            var idLen = id.Length;
-
-            var str = await GetDataAsStringAsync(length: idLen);
-
-            return str == id;
-        }
-#else
-        protected async Task<bool> IsRecordIdAsync(string id)
-        {
-            var peekLen = Math.Min(32, _len);
-
-            var str = await GetDataAsStringAsync(length: peekLen);
-
-            var idx = str.IndexOf(id);
-
-            if (idx > 0)
-            {
-                throw new MobiMetadataException($"Got expected identifier {id} at unexpected postion {idx}");
-            }
-
-            return idx == 0;
-        }
-#endif
-
-        public virtual async Task<string> GetDataAsStringAsync(int length = 0, int skip = 0)
-        {
-            var len = length > 0 ? length : _len;
-
-            len -= skip;
-            _stream.Position = _pos + skip;
-
-            var bytes = ArrayPool<byte>.Shared.Rent(len);
+            var bytes = ArrayPool<byte>.Shared.Rent(idLen);
             try
             {
-                var memory = await ReadDataAsync(bytes, len);
-                return Encoding.UTF8.GetString(memory.Span);
+                var data = await ReadDataAsync(bytes, idLen);
+
+                return data.Span.SequenceEqual(recordId.Span);
             }
             finally
-            {
-                ArrayPool<byte>.Shared.Return(bytes);
+            { 
+               ArrayPool<byte>.Shared.Return(bytes);
             }
         }
 
@@ -118,7 +91,7 @@ namespace MobiMetadata
             return 0;
         }
 
-        private async Task<Memory<byte>> ReadDataAsync(byte[] bytes, int length)
+        protected async Task<Memory<byte>> ReadDataAsync(byte[] bytes, int length)
         {
             var memory = bytes.AsMemory(0, length);
             var read = await _stream.ReadAsync(memory);
@@ -131,17 +104,17 @@ namespace MobiMetadata
             return memory;
         }
 
-        public async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream = null)
+        public async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream = null!)
         {
-            return await WriteDataCoreAsync(toStream, "CRES", additionalStream);
+            return await WriteDataCoreAsync(toStream, RecordId.CRES, additionalStream);
         }
 
-        public async Task<bool> WriteDataAsync(Stream toStream, Stream additionalStream = null)
+        public async Task<bool> WriteDataAsync(Stream toStream, Stream additionalStream = null!)
         {
             return await WriteDataCoreAsync(toStream, null!, additionalStream);
         }
 
-        private async Task<bool> WriteDataCoreAsync(Stream toStream, string recordId = null, Stream additionalStream = null)
+        private async Task<bool> WriteDataCoreAsync(Stream toStream, Memory<byte>? recordId = null, Stream additionalStream = null!)
         {
             var bytes = ArrayPool<byte>.Shared.Rent(_len);
             try
@@ -150,7 +123,8 @@ namespace MobiMetadata
 
                 var memory = await ReadDataAsync(bytes, _len);
 
-                if (recordId != null && !TestRecordId(recordId, memory))
+                // Only write data if this record begins with the specified recordId 
+                if (recordId.HasValue && !memory.Span.StartsWith(recordId.Value.Span))
                 {
                     return false;
                 }

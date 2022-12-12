@@ -51,7 +51,7 @@
                 }
                 else
                 {
-                    imageRecord = new ImageRecordHD(stream, dataOffset, nextRecordOffset - dataOffset);
+                    imageRecord = new PageRecordHD(stream, dataOffset, nextRecordOffset - dataOffset);
                 }
 
                 if (coverIndexOffset > 0 && index == coverIndex)

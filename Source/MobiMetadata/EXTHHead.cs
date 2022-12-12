@@ -66,12 +66,13 @@ namespace MobiMetadata
         }
 
         //Properties
-        public string IdentifierAsString => Encoding.UTF8.GetString(GetPropData(IdentifierAttr).Span).Replace("\0", string.Empty);
+        public string IdentifierAsString => GetPropAsUtf8(IdentifierAttr).Replace("\0", string.Empty);
 
-        public uint HeaderLength => Converter.ToUInt32(GetPropData(HeaderLengthAttr).Span);
+        public uint HeaderLength => GetPropAsUint(HeaderLengthAttr);
 
-        public uint RecordCount => Converter.ToUInt32(GetPropData(RecordCountAttr).Span);
+        public uint RecordCount => GetPropAsUint(RecordCountAttr);
 
+        //Records
         public string Author => GetRecordAsString(100);
 
         public string Publisher => GetRecordAsString(101);
@@ -129,7 +130,7 @@ namespace MobiMetadata
         private string GetRecordAsString(uint recordType)
         {
             var record = GetRecord(recordType);
-            return record != null ? Encoding.UTF8.GetString(record.RecordData.Span) : default;
+            return record != null ? Encoding.UTF8.GetString(record.RecordData.Span) : default!;
         }
 
         private uint GetRecordAsUint(uint recordType)

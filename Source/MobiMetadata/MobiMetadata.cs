@@ -57,6 +57,16 @@
                 throw new MobiMetadataException($"Cannot read image records ({nameof(PdbHeader.SkipRecords)} is {PdbHeader.SkipRecords}).");
             }
 
+            if (MobiHeader.SkipProperties) 
+            {
+                throw new MobiMetadataException($"Cannot read image records ({nameof(MobiHeader.SkipProperties)} is {MobiHeader.SkipProperties}).");
+            }
+
+            if (MobiHeader.SkipExthHeader)
+            {
+                throw new MobiMetadataException($"Cannot read image records ({nameof(MobiHeader.SkipExthHeader)} is {MobiHeader.SkipExthHeader}).");
+            }
+
             var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
             var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
 
