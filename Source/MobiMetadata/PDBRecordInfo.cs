@@ -14,7 +14,6 @@
         {
         }
 
-        public uint RecordDataOffset
-            => Converter.ToUInt32(GetPropertyData(_recordDataOffsetPos, _recordDataOffsetLen).Span);
+        public uint RecordDataOffset => GetPropertyDataAsUint(_recordDataOffsetPos, _recordDataOffsetLen);
     }
 }

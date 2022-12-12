@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class PDBHead : BaseHead
     {
@@ -88,35 +86,35 @@ namespace MobiMetadata
 
         public bool IsHDImageContainer => TypeAsString == "RBIN" && CreatorAsString == "CONT";
 
-        public string Name => Encoding.ASCII.GetString(GetPropData(NameAttr).Span).Replace("\0", string.Empty);
+        public string Name => GetPropAsUtf8RemoveNull(NameAttr);
 
-        public ushort Attributes => Converter.ToUInt16(GetPropData(AttributesAttr).Span);
+        public ushort Attributes => GetPropAsUshort(AttributesAttr);
 
-        public ushort Version => Converter.ToUInt16(GetPropData(VersionAttr).Span);
+        public ushort Version => GetPropAsUshort(VersionAttr);
 
-        public uint CreationDate => Converter.ToUInt32(GetPropData(CreationDateAttr).Span);
+        public uint CreationDate => GetPropAsUint(CreationDateAttr);
 
-        public uint ModificationDate => Converter.ToUInt32(GetPropData(ModificationDateAttr).Span);
+        public uint ModificationDate => GetPropAsUint(ModificationDateAttr);
 
-        public uint LastBackupDate => Converter.ToUInt32(GetPropData(LastBackupDateAttr).Span);
+        public uint LastBackupDate => GetPropAsUint(LastBackupDateAttr);
 
-        public uint ModificationNumber => Converter.ToUInt32(GetPropData(ModificationNumberAttr).Span);
+        public uint ModificationNumber => GetPropAsUint(ModificationNumberAttr);
 
-        public uint AppInfoID => Converter.ToUInt32(GetPropData(AppInfoIDAttr).Span);
+        public uint AppInfoID => GetPropAsUint(AppInfoIDAttr);
 
-        public uint SortInfoID => Converter.ToUInt32(GetPropData(SortInfoIDAttr).Span);
+        public uint SortInfoID => GetPropAsUint(SortInfoIDAttr);
 
-        public uint Type => Converter.ToUInt32(GetPropData(TypeAttr).Span);
+        public uint Type => GetPropAsUint(TypeAttr);
 
-        public string TypeAsString => Encoding.ASCII.GetString(GetPropData(TypeAttr).Span).Replace("\0", string.Empty);
+        public string TypeAsString => GetPropAsUtf8RemoveNull(TypeAttr);
 
-        public uint Creator => Converter.ToUInt32(GetPropData(CreatorAttr).Span);
+        public uint Creator => GetPropAsUint(CreatorAttr);
 
-        public string CreatorAsString => Encoding.ASCII.GetString(GetPropData(CreatorAttr).Span).Replace("\0", string.Empty);
+        public string CreatorAsString => GetPropAsUtf8RemoveNull(CreatorAttr);
 
-        public uint UniqueIDSeed => Converter.ToUInt32(GetPropData(UniqueIDSeedAttr).Span);
+        public uint UniqueIDSeed => GetPropAsUint(UniqueIDSeedAttr);
 
-        public ushort NumRecords => Converter.ToUInt16(NumRecordsData.Span);
+        public ushort NumRecords => GetDataAsUshort(NumRecordsData);
 
         //public ushort GapToData => Converter.ToUInt16(GapToDataAttr.GetData(HeaderData).Span);
 

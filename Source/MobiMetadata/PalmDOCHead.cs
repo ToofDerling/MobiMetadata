@@ -35,23 +35,23 @@
         }
 
         //Properties
-        public ushort Compression => Converter.ToUInt16(GetPropData(CompressionAttr).Span);
+        public ushort Compression => GetPropAsUshort(CompressionAttr);
 
         public string CompressionAsString => Compression switch
         {
             1 => "None",
             2 => "PalmDOC",
             17480 => "HUFF/CDIC",
-            _ => $"Unknown (0)",
+            _ => $"Unknown",
         };
 
-        public uint TextLength => Converter.ToUInt32(GetPropData(TextLengthAttr).Span);
+        public uint TextLength => GetPropAsUint(TextLengthAttr);
 
-        public ushort RecordCount => Converter.ToUInt16(GetPropData(RecordCountAttr).Span);
+        public ushort RecordCount => GetPropAsUshort(RecordCountAttr);
 
-        public ushort RecordSize => Converter.ToUInt16(GetPropData(RecordSizeAttr).Span);
+        public ushort RecordSize => GetPropAsUshort(RecordSizeAttr);
 
-        public ushort EncryptionType => Converter.ToUInt16(GetPropData(EncryptionTypeAttr).Span);
+        public ushort EncryptionType => GetPropAsUshort(EncryptionTypeAttr);
 
         public string EncryptionTypeAsString
         {

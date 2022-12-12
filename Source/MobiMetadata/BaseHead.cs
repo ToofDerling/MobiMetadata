@@ -63,6 +63,11 @@ namespace MobiMetadata
             return GetDataAsUtf8(GetPropData(attr));
         }
 
+        protected string GetPropAsUtf8RemoveNull(Attr attr)
+        {
+            return GetDataAsUtf8(GetPropData(attr)).Replace("\0", null);
+        }
+
         protected string GetDataAsUtf8(Memory<byte> memory)
         {
             return Encoding.UTF8.GetString(memory.Span);
@@ -70,12 +75,22 @@ namespace MobiMetadata
 
         protected uint GetPropAsUint(Attr attr)
         {
-            return Converter.ToUInt32(GetPropData(attr).Span);
+            return GetDataAsUint(GetPropData(attr));
+        }
+
+        protected uint GetDataAsUint(Memory<byte> memory)
+        {
+            return Converter.ToUInt32(memory.Span);
         }
 
         protected ushort GetPropAsUshort(Attr attr)
         {
-            return Converter.ToUInt16(GetPropData(attr).Span);
+            return GetDataAsUshort(GetPropData(attr));
+        }
+
+        protected ushort GetDataAsUshort(Memory<byte> memory)
+        {
+            return Converter.ToUInt16(memory.Span);
         }
     }
 }

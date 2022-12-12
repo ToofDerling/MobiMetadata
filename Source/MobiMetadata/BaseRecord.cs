@@ -16,5 +16,10 @@
         {
             return RecordsData.Slice(_recordPosition + pos, len);
         }
+
+        protected uint GetPropertyDataAsUint(int pos, int len)
+        {
+            return Converter.ToUInt32(GetPropertyData(pos, len).Span);
+        }
     }
 }

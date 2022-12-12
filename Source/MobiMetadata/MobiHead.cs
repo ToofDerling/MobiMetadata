@@ -146,7 +146,7 @@ namespace MobiMetadata
         private async Task ReadExthHeaderAsync(Stream stream, long mobiHeaderOffset)
         {
             //If bit 6 (0x40) is set, then there's an EXTH record 
-            bool exthExists = (Converter.ToUInt32(GetPropData(ExthFlagsAttr).Span) & 0x40) != 0;
+            bool exthExists = (GetPropAsUint(ExthFlagsAttr) & 0x40) != 0;
             if (exthExists)
             {
                 // The EXTH header immediately follows the Mobi header, but as the MOBI header is of
@@ -166,7 +166,7 @@ namespace MobiMetadata
 
         public string FullName => GetDataAsUtf8(FullNameData);
 
-        public string IdentifierAsString => GetPropAsUtf8(IdentifierAttr).Replace("\0", string.Empty);
+        public string IdentifierAsString => GetPropAsUtf8RemoveNull(IdentifierAttr);
 
         public uint HeaderLength => GetPropAsUint(HeaderLengthAttr);
 

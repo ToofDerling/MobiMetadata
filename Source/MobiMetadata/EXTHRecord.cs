@@ -28,9 +28,9 @@
 
         public int Size => DataLength + 8;
 
-        public uint RecordLength => Converter.ToUInt32(GetPropertyData(_recordLengthPos, _recordLengthLen).Span);
+        public uint RecordLength => GetPropertyDataAsUint(_recordLengthPos, _recordLengthLen);
 
-        public uint RecordType => Converter.ToUInt32(GetPropertyData(_recordTypePos, _recordTypeLen).Span);
+        public uint RecordType => GetPropertyDataAsUint(_recordTypePos, _recordTypeLen);
 
         public Memory<byte> RecordData => GetPropertyData(_dataPos, _dataLen);
     }
