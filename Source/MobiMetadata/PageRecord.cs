@@ -53,7 +53,7 @@ namespace MobiMetadata
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync(ImageRecordHD.RecordId);
+            return await IsRecordIdAsync("CRES");
         }
 
         public int Length => _len;
@@ -131,12 +131,17 @@ namespace MobiMetadata
             return memory;
         }
 
-        public virtual async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream)
+        public async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream = null)
         {
-            return await WriteDataAsync(toStream, ImageRecordHD.RecordId, additionalStream);
+            return await WriteDataCoreAsync(toStream, "CRES", additionalStream);
         }
 
-        public virtual async Task<bool> WriteDataAsync(Stream toStream, string recordId = null, Stream additionalStream = null)
+        public async Task<bool> WriteDataAsync(Stream toStream, Stream additionalStream = null)
+        {
+            return await WriteDataCoreAsync(toStream, null!, additionalStream);
+        }
+
+        private async Task<bool> WriteDataCoreAsync(Stream toStream, string recordId = null, Stream additionalStream = null)
         {
             var bytes = ArrayPool<byte>.Shared.Rent(_len);
             try

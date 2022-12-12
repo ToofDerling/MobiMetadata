@@ -6,8 +6,6 @@
         {
         }
 
-        public static string RecordId => "CRES";
-
         protected override int GetMagic()
         {
             // Take into account the length between the CRES marker
