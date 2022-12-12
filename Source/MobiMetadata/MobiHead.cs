@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class MobiHead : BaseHead
     {
