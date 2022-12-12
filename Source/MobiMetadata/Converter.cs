@@ -4,11 +4,11 @@ namespace MobiMetadata
 {
     public static class Converter
     {
-        public static short ToInt16(byte[] bytes)
-        {
-            var res = BitConverter.ToInt16(bytes);
-            return BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(res) : res;
-        }
+        //public static short ToInt16(byte[] bytes)
+        //{
+        //    var res = BitConverter.ToInt16(bytes);
+        //    return BitConverter.IsLittleEndian ? BinaryPrimitives.ReverseEndianness(res) : res;
+        //}
 
         //public static int ToInt32(byte[] bytes)
         //{
