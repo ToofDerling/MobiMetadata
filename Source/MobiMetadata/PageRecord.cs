@@ -109,9 +109,9 @@ namespace MobiMetadata
             return await WriteDataCoreAsync(toStream, RecordId.CRES, additionalStream);
         }
 
-        public async Task<bool> WriteDataAsync(Stream toStream, Stream additionalStream = null!)
+        public async Task WriteDataAsync(Stream toStream, Stream additionalStream = null!)
         {
-            return await WriteDataCoreAsync(toStream, null!, additionalStream);
+            await WriteDataCoreAsync(toStream, null!, additionalStream);
         }
 
         private async Task<bool> WriteDataCoreAsync(Stream toStream, Memory<byte>? recordId = null, Stream additionalStream = null!)
