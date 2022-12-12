@@ -59,12 +59,11 @@ namespace MobiMetadata
                 xmlStr = xmlStr.Replace("\0", null).Trim();
 
                 var xmlBegin = xmlStr.IndexOf("<");
-                var xmlEnd = xmlStr.LastIndexOf(">");
+                var xmlEnd = xmlStr.LastIndexOf(">") + 1;
 
-                xmlStr = xmlStr.Substring(xmlBegin, xmlEnd - xmlBegin + 1);
+                xmlStr = xmlStr[xmlBegin..xmlEnd];
 
                 int pageCount = 0;
-
                 var strReader = new StringReader(xmlStr);
 
                 using (XmlReader xmlReader = XmlReader.Create(strReader, XmlReaderSettings))
