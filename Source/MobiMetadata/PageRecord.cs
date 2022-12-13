@@ -11,7 +11,6 @@ namespace MobiMetadata
 
         protected class RecordId
         {
-
             public static Memory<byte> CRES => Encoding.ASCII.GetBytes("CRES");
 
             public static Memory<byte> KindleEmbed => Encoding.ASCII.GetBytes("kindle:embed");
