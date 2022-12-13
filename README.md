@@ -36,6 +36,18 @@ if (metadata.PageRecords.CoverRecord != null)
 {
     await metadata.PageRecords.CoverRecord.WriteDataAsync(yourStream);
 }
+
+// Loop through pages
+for (int i = 0; i < = metadata.PageRecords.ContentRecords.Count; i++)
+{
+    // Try to save the hd image
+    if (metadata.PageRecordsHD == null 
+        || !await hdImageRecords.ContentRecords[i].TryWriteHDImageDataAsync(yourStream))
+    {
+        // Fall back on the sd image 
+        await metadata.PageRecords.ContentRecords[i].WriteDataAsync(yourStream);
+    }
+}
 </pre>
 
 More to come...
