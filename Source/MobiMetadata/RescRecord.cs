@@ -91,7 +91,6 @@ namespace MobiMetadata
             {
                 ArrayPool<byte>.Shared.Return(bytes);
             }
-
         }
     }
 }
