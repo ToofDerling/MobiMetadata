@@ -63,7 +63,7 @@
                     case 1: return "Old Mobipocket";
                     case 2: return "Mobipocket"; ;
                     default:
-                        return $"Unknown (0)";
+                        return $"Unknown" ;
                 }
             }
         }
