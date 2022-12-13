@@ -50,7 +50,9 @@ for (int i = 0; i < = metadata.PageRecords.ContentRecords.Count; i++)
 }
 </pre>
 
-More to come...
+Have a look at the [CbzMage source code](https://github.com/ToofDerling/CbzMage/tree/main/Source/AzwConverter) (the Engine classes and MetadataManager) for more examples. Here is a [page](https://wiki.mobileread.com/wiki/MOBI) with lots of information about the various headers and properties.
+
+If you have any questions use [Discussions](https://github.com/ToofDerling/MobiMetadata/discussions). If you want to report a bug use [Issues](https://github.com/ToofDerling/MobiMetadata/issues).
 
 **Credits.**
 
