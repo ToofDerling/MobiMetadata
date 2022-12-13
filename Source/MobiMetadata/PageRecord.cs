@@ -11,13 +11,14 @@ namespace MobiMetadata
 
         protected class RecordId
         {
-            public static readonly Memory<byte> CRES = Encoding.ASCII.GetBytes("CRES");
 
-            public static readonly Memory<byte> KindleEmbed = Encoding.ASCII.GetBytes("kindle:embed");
+            public static Memory<byte> CRES => Encoding.ASCII.GetBytes("CRES");
 
-            public static readonly Memory<byte> DATP = Encoding.ASCII.GetBytes("DATP");
+            public static Memory<byte> KindleEmbed => Encoding.ASCII.GetBytes("kindle:embed");
 
-            public static readonly Memory<byte> RESC = Encoding.ASCII.GetBytes("RESC");
+            public static Memory<byte> DATP => Encoding.ASCII.GetBytes("DATP");
+
+            public static Memory<byte> RESC => Encoding.ASCII.GetBytes("RESC");
         }
 
         public PageRecord(Stream stream, long pos, uint len)
