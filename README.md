@@ -2,7 +2,7 @@
 
 MobiMetadata is a .NET library you can use to read strongly typed metadata from mobi/azw files (with no drm) and save all images - including HD images from the azw.res file - to a stream of your choice.  
 
-MobiMetadata targets .NET 6.0, uses a lot of recent language features and is fully async. But the documentation is what you're reading here, the code is pretty much uncommented, and there's no Nuget package. Clone it, compile it, and hack away.
+MobiMetadata targets .NET 6.0, is fully async, and uses a lot of recent language features. But the documentation is what you're reading here, the code is pretty much uncommented, and there's no Nuget package. Clone it, compile it, and hack away.
 
 **How to use.**
 
