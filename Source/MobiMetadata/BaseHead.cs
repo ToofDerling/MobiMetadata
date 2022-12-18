@@ -6,7 +6,7 @@ namespace MobiMetadata
     {
         public sealed class Attr
         {
-            public Attr(int length, List<Attr> attrs = null)
+            public Attr(int length, List<Attr> attrs = null! )
             {
                 if (attrs != null)
                 {
