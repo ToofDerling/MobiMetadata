@@ -2,7 +2,6 @@
 using System.Text;
 using System.Xml;
 
-
 namespace MobiMetadata
 {
     public class RescRecord : PageRecord
