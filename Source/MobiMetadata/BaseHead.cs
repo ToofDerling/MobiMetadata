@@ -43,14 +43,14 @@ namespace MobiMetadata
             }
             else
             {
-                await ReadHeaderDataAsync(stream, length);
+                await ReadHeaderDataAsync(stream, length).ConfigureAwait(false);
             }
         }
 
         protected async Task ReadHeaderDataAsync(Stream stream, int length)
         {
             HeaderData = new byte[length];
-            await stream.ReadAsync(HeaderData);
+            await stream.ReadAsync(HeaderData).ConfigureAwait(false);
         }
 
         protected Memory<byte> GetPropData(Attr attr)

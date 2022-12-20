@@ -51,10 +51,10 @@
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = pdbHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadHeaderDataAsync(stream, attrLen);
+            await SkipOrReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
 
             NumRecordsData = new byte[NumRecordsAttr.Length];
-            await stream.ReadAsync(NumRecordsData);
+            await stream.ReadAsync(NumRecordsData).ConfigureAwait(false);
 
             var recordCount = NumRecords;
             var recordDataSize = recordCount * PDBRecordInfo.PdbRecordLen;
@@ -66,7 +66,7 @@
             else
             {
                 RecordsData = new byte[recordDataSize];
-                await stream.ReadAsync(RecordsData);
+                await stream.ReadAsync(RecordsData).ConfigureAwait(false);
 
                 _recordInfoList = new PDBRecordInfo[recordCount];
                 var recordPos = 0;

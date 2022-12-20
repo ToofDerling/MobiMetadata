@@ -77,10 +77,10 @@
             {
                 var record = _allRecords[rescIndex];
                 
-                var rescRecord = await record.GetRescRecordAsync();
+                var rescRecord = await record.GetRescRecordAsync().ConfigureAwait(false);
                 if (rescRecord != null)
                 {
-                    await rescRecord.ParseXmlAsync();
+                    await rescRecord.ParseXmlAsync().ConfigureAwait(false);
                     RescRecord = rescRecord;
 
                     break;
@@ -96,7 +96,7 @@
             if (_allRecords.Count == RescRecord.PageCount)
             {
                 var lastRecord = _allRecords.Count - 1;
-                if (await _allRecords[lastRecord].IsDatpRecordAsync())
+                if (await _allRecords[lastRecord].IsDatpRecordAsync().ConfigureAwait(false))
                 {
                     _allRecords.RemoveAt(lastRecord);
                     RescRecord.AdjustPageCountBy(-1);
@@ -113,7 +113,7 @@
                     var rec = restOfRecords[i];
 
                     // The DATP record
-                    if (await rec.IsDatpRecordAsync())
+                    if (await rec.IsDatpRecordAsync().ConfigureAwait(false))
                     {
                         DatpRecord = rec;
                         restOfRecords[i] = null;
@@ -152,7 +152,7 @@
                     var rec = restOfRecords[i];
 
                     // The kindle:embed record
-                    if (await rec.IsKindleEmbedRecordAsync())
+                    if (await rec.IsKindleEmbedRecordAsync().ConfigureAwait(false))
                     {
                         KindleEmbedRecord = rec;
                         restOfRecords[i] = null;

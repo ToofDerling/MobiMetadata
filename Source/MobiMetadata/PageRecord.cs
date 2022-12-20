@@ -32,7 +32,7 @@ namespace MobiMetadata
             _stream.Position = _pos;
 
             RescRecord rescRecord = null!;
-            if (!await IsRecordIdAsync(RecordId.RESC))
+            if (!await IsRecordIdAsync(RecordId.RESC).ConfigureAwait(false))
             {
                 return rescRecord;
             }
@@ -50,21 +50,21 @@ namespace MobiMetadata
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync(RecordId.DATP);
+            return await IsRecordIdAsync(RecordId.DATP).ConfigureAwait(false);
         }
 
         public async Task<bool> IsKindleEmbedRecordAsync()
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync(RecordId.KindleEmbed);
+            return await IsRecordIdAsync(RecordId.KindleEmbed).ConfigureAwait(false);
         }
 
         public async Task<bool> IsCresRecordAsync()
         {
             _stream.Position = _pos;
 
-            return await IsRecordIdAsync(RecordId.CRES);
+            return await IsRecordIdAsync(RecordId.CRES).ConfigureAwait(false);
         }
 
         public int Length => _len;
@@ -76,13 +76,13 @@ namespace MobiMetadata
             var bytes = ArrayPool<byte>.Shared.Rent(idLen);
             try
             {
-                var data = await ReadDataAsync(bytes, idLen);
+                var data = await ReadDataAsync(bytes, idLen).ConfigureAwait(false);
 
                 return data.Span.SequenceEqual(recordId.Span);
             }
             finally
-            { 
-               ArrayPool<byte>.Shared.Return(bytes);
+            {
+                ArrayPool<byte>.Shared.Return(bytes);
             }
         }
 
@@ -94,7 +94,7 @@ namespace MobiMetadata
         protected async Task<Memory<byte>> ReadDataAsync(byte[] bytes, int length)
         {
             var memory = bytes.AsMemory(0, length);
-            var read = await _stream.ReadAsync(memory);
+            var read = await _stream.ReadAsync(memory).ConfigureAwait(false);
 
             if (read != length)
             {
@@ -104,24 +104,24 @@ namespace MobiMetadata
             return memory;
         }
 
-        public async Task<bool> TryWriteHDImageDataAsync(Stream toStream, Stream additionalStream = null!)
+        public async Task<bool> TryWriteHDImageDataAsync(params Stream[] streams)
         {
-            return await WriteDataCoreAsync(toStream, RecordId.CRES, additionalStream);
+            return await WriteDataCoreAsync(RecordId.CRES, streams).ConfigureAwait(false);
         }
 
-        public async Task WriteDataAsync(Stream toStream, Stream additionalStream = null!)
+        public async Task WriteDataAsync(params Stream[] streams)
         {
-            await WriteDataCoreAsync(toStream, null!, additionalStream);
+            await WriteDataCoreAsync(null!, streams).ConfigureAwait(false);
         }
 
-        private async Task<bool> WriteDataCoreAsync(Stream toStream, Memory<byte>? recordId = null, Stream additionalStream = null!)
+        private async Task<bool> WriteDataCoreAsync(Memory<byte>? recordId = null, params Stream[] streams)
         {
             var bytes = ArrayPool<byte>.Shared.Rent(_len);
             try
             {
                 _stream.Position = _pos;
 
-                var memory = await ReadDataAsync(bytes, _len);
+                var memory = await ReadDataAsync(bytes, _len).ConfigureAwait(false);
 
                 // Only write data if this record begins with the specified recordId 
                 if (recordId.HasValue && !memory.Span.StartsWith(recordId.Value.Span))
@@ -132,11 +132,12 @@ namespace MobiMetadata
                 var magic = GetMagic();
                 memory = magic > 0 ? memory[magic..] : memory;
 
-                await toStream.WriteAsync(memory);
-
-                if (additionalStream != null)
+                foreach (var stream in streams)
                 {
-                    await additionalStream.WriteAsync(memory);
+                    if (stream != null) 
+                    {
+                        await stream.WriteAsync(memory).ConfigureAwait(false);
+                    }
                 }
 
                 return true;

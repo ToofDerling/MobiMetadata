@@ -17,7 +17,7 @@
         internal override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = exthHeadAttrs.Sum(x => x.Length);
-            await ReadHeaderDataAsync(stream, attrLen);
+            await ReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
 
             if (IdentifierAsString != "EXTH")
             {
@@ -25,7 +25,7 @@
             }
 
             RecordsData = new byte[HeaderLength - attrLen];
-            await stream.ReadAsync(RecordsData);
+            await stream.ReadAsync(RecordsData).ConfigureAwait(false);
 
             var recordPos = 0;
             var recordCount = RecordCount;

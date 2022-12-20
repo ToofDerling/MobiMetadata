@@ -2,6 +2,7 @@
 using System.Text;
 using System.Xml;
 
+
 namespace MobiMetadata
 {
     public class RescRecord : PageRecord
@@ -41,7 +42,7 @@ namespace MobiMetadata
             using (var xmlReader = XmlReader.Create(new StringReader(RawXml), XmlReaderSettings))
             using (var xmlWriter = XmlWriter.Create(sb, XmlWriterSettings))
             {
-                await xmlWriter.WriteNodeAsync(xmlReader, false);
+                await xmlWriter.WriteNodeAsync(xmlReader, false).ConfigureAwait(false);
             }
             return sb.ToString();
         }
@@ -53,7 +54,7 @@ namespace MobiMetadata
             var bytes = ArrayPool<byte>.Shared.Rent(len);
             try
             {
-                var data = await ReadDataAsync(bytes, len);
+                var data = await ReadDataAsync(bytes, len).ConfigureAwait(false);
 
                 var xmlStr = Encoding.UTF8.GetString(data.Span);
                 xmlStr = xmlStr.Replace("\0", null).Trim();
@@ -68,8 +69,8 @@ namespace MobiMetadata
 
                 using (XmlReader xmlReader = XmlReader.Create(strReader, XmlReaderSettings))
                 {
-                    await xmlReader.ReadAsync();
-                    while (await xmlReader.ReadAsync())
+                    await xmlReader.ReadAsync().ConfigureAwait(false);
+                    while (await xmlReader.ReadAsync().ConfigureAwait(false))
                     {
                         if (xmlReader.Name == "itemref")
                         {

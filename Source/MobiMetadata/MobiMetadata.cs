@@ -36,13 +36,13 @@
         {
             _stream = stream;
 
-            await _pdbHeader.ReadHeaderAsync(stream);
+            await _pdbHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
 
-            await _palmDocHeader.ReadHeaderAsync(stream);
+            await _palmDocHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
 
             // This also reads the exthheader
-            await _mobiHeader.ReadHeaderAsync(stream);
+            await _mobiHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
 
             if (_mobiHeader.ExthHeader == null && _throwIfNoExthHeader)
             {
@@ -74,13 +74,13 @@
                 _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
                 coverIndexOffset, thumbIndexOffset);
 
-            await PageRecords.AnalyzePageRecordsAsync();
+            await PageRecords.AnalyzePageRecordsAsync().ConfigureAwait(false);
         }
 
         public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
         {
             var pdbHeader = new PDBHead();
-            await pdbHeader.ReadHeaderAsync(hdContainerStream);
+            await pdbHeader.ReadHeaderAsync(hdContainerStream).ConfigureAwait(false);
 
             if (!pdbHeader.IsHDImageContainer)
             {
@@ -91,7 +91,7 @@
                 1, (ushort)(pdbHeader.Records.Length - 1),
                 MobiHeader.ExthHeader.CoverOffset, MobiHeader.ExthHeader.ThumbOffset);
 
-            await PageRecordsHD.AnalyzePageRecordsHDAsync(PageRecords.ContentRecords.Count);
+            await PageRecordsHD.AnalyzePageRecordsHDAsync(PageRecords.ContentRecords.Count).ConfigureAwait(false);
         }
     }
 }

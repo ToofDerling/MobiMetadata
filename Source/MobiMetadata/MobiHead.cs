@@ -112,7 +112,7 @@
             var mobiHeaderOffset = stream.Position;
 
             var attrLen = mobiHeadAttrs.Sum(x => x.Length);
-            await SkipOrReadHeaderDataAsync(stream, attrLen);
+            await SkipOrReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
 
             if (IdentifierAsString != "MOBI")
             {
@@ -121,12 +121,12 @@
 
             if (!SkipExthHeader)
             {
-                await ReadExthHeaderAsync(stream, mobiHeaderOffset);
+                await ReadExthHeaderAsync(stream, mobiHeaderOffset).ConfigureAwait(false);
             }
             
             if (!SkipProperties)
             {
-                await ReadFullNameAsync(stream);
+                await ReadFullNameAsync(stream).ConfigureAwait(false);
             }
         }
 
@@ -138,7 +138,7 @@
             var fullnameLength = (int)FullNameLength;
             FullNameData = new byte[fullnameLength];
 
-            await stream.ReadAsync(FullNameData);
+            await stream.ReadAsync(FullNameData).ConfigureAwait(false);
         }
 
         private async Task ReadExthHeaderAsync(Stream stream, long mobiHeaderOffset)
@@ -153,7 +153,7 @@
                 stream.Position = exthOffset;
 
                 ExthHeader = new EXTHHead();
-                await ExthHeader.ReadHeaderAsync(stream);
+                await ExthHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
             }
         }
 
