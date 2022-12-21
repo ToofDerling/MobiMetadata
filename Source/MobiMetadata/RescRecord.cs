@@ -22,7 +22,7 @@ namespace MobiMetadata
             Async = true,
         };
 
-        public string RawXml { get; private set; }
+        private string _xmlStr;
 
         public int PageCount { get; private set; }
 
@@ -38,7 +38,7 @@ namespace MobiMetadata
         {
             var sb = new StringBuilder();
 
-            using (var xmlReader = XmlReader.Create(new StringReader(RawXml), XmlReaderSettings))
+            using (var xmlReader = XmlReader.Create(new StringReader(_xmlStr), XmlReaderSettings))
             using (var xmlWriter = XmlWriter.Create(sb, XmlWriterSettings))
             {
                 await xmlWriter.WriteNodeAsync(xmlReader, false).ConfigureAwait(false);
@@ -61,30 +61,28 @@ namespace MobiMetadata
                 var xmlBegin = xmlStr.IndexOf("<");
                 var xmlEnd = xmlStr.LastIndexOf(">") + 1;
 
-                xmlStr = xmlStr[xmlBegin..xmlEnd];
+                _xmlStr = xmlStr[xmlBegin..xmlEnd];
 
                 int pageCount = 0;
-                var strReader = new StringReader(xmlStr);
+                var strReader = new StringReader(_xmlStr);
 
-                using (XmlReader xmlReader = XmlReader.Create(strReader, XmlReaderSettings))
+                using var xmlReader = XmlReader.Create(strReader, XmlReaderSettings);
+                await xmlReader.ReadAsync().ConfigureAwait(false);
+
+                while (await xmlReader.ReadAsync().ConfigureAwait(false))
                 {
-                    await xmlReader.ReadAsync().ConfigureAwait(false);
-                    while (await xmlReader.ReadAsync().ConfigureAwait(false))
+                    if (xmlReader.Name == "itemref")
                     {
-                        if (xmlReader.Name == "itemref")
-                        {
-                            var idRef = xmlReader.GetAttribute("idref");
-                            var skelId = xmlReader.GetAttribute("skelid");
+                        var idRef = xmlReader.GetAttribute("idref");
+                        var skelId = xmlReader.GetAttribute("skelid");
 
-                            if (idRef != null && skelId != null)
-                            {
-                                pageCount++;
-                            }
+                        if (idRef != null && skelId != null)
+                        {
+                            pageCount++;
                         }
                     }
                 }
 
-                RawXml = xmlStr;
                 PageCount = pageCount;
             }
             finally
