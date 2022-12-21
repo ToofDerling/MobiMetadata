@@ -53,7 +53,7 @@
 
         private static int GetPaddingSize(int dataSize)
         {
-            int paddingSize = dataSize % 4;
+            var paddingSize = dataSize % 4;
 
             if (paddingSize != 0)
             {

@@ -144,7 +144,7 @@
         private async Task ReadExthHeaderAsync(Stream stream, long mobiHeaderOffset)
         {
             //If bit 6 (0x40) is set, then there's an EXTH record 
-            bool exthExists = (GetPropAsUint(ExthFlagsAttr) & 0x40) != 0;
+            var exthExists = (GetPropAsUint(ExthFlagsAttr) & 0x40) != 0;
             if (exthExists)
             {
                 // The EXTH header immediately follows the Mobi header, but as the MOBI header is of
