@@ -2,13 +2,13 @@
 {
     public class EXTHHead : BaseHead
     {
-        private static readonly List<Attr> exthHeadAttrs = new();
+        private static readonly List<Attr> _exthHeadAttrs = new();
 
-        private static readonly Attr IdentifierAttr = new(4, exthHeadAttrs);
+        private static readonly Attr _identifierAttr = new(4, _exthHeadAttrs);
 
-        private static readonly Attr HeaderLengthAttr = new(4, exthHeadAttrs);
+        private static readonly Attr _headerLengthAttr = new(4, _exthHeadAttrs);
 
-        private static readonly Attr RecordCountAttr = new(4, exthHeadAttrs);
+        private static readonly Attr _recordCountAttr = new(4, _exthHeadAttrs);
 
         private EXTHRecord[] _recordList;
         
@@ -16,7 +16,7 @@
 
         internal override async Task ReadHeaderAsync(Stream stream)
         {
-            var attrLen = exthHeadAttrs.Sum(x => x.Length);
+            var attrLen = _exthHeadAttrs.Sum(x => x.Length);
             await ReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
 
             if (IdentifierAsString != "EXTH")
@@ -64,11 +64,11 @@
         }
 
         //Properties
-        public string IdentifierAsString => GetPropAsUtf8RemoveNull(IdentifierAttr);
+        public string IdentifierAsString => GetPropAsUtf8RemoveNull(_identifierAttr);
 
-        public uint HeaderLength => GetPropAsUint(HeaderLengthAttr);
+        public uint HeaderLength => GetPropAsUint(_headerLengthAttr);
 
-        public uint RecordCount => GetPropAsUint(RecordCountAttr);
+        public uint RecordCount => GetPropAsUint(_recordCountAttr);
 
         //Records
         public string Author => GetRecordAsString(100);

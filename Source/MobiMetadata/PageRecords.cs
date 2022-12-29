@@ -110,24 +110,24 @@
 
                 for (int i = 0, sz = restOfRecords.Count; i < sz; i++)
                 {
-                    var rec = restOfRecords[i];
+                    var record = restOfRecords[i];
 
                     // The DATP record
-                    if (await rec.IsDatpRecordAsync().ConfigureAwait(false))
+                    if (await record.IsDatpRecordAsync().ConfigureAwait(false))
                     {
-                        DatpRecord = rec;
+                        DatpRecord = record;
                         restOfRecords[i] = null;
                     }
                     // The 1992 bytes image
-                    else if (rec.IsLen1992Record())
+                    else if (record.IsLen1992Record())
                     {
-                        Len1992Record = rec;
+                        Len1992Record = record;
                         restOfRecords[i] = null;
                     }
                 }
 
                 // Set the "real" rest and the content records
-                RestOfRecords = restOfRecords.Where(rec => rec != null).ToList();
+                RestOfRecords = restOfRecords.Where(record => record != null).ToList();
                 ContentRecords = _allRecords.Take(RescRecord.PageCount).ToList();
             }
             else
@@ -149,17 +149,17 @@
 
                 for (int i = 0, sz = restOfRecords.Count; i < sz; i++)
                 {
-                    var rec = restOfRecords[i];
+                    var record = restOfRecords[i];
 
                     // The kindle:embed record
-                    if (await rec.IsKindleEmbedRecordAsync().ConfigureAwait(false))
+                    if (await record.IsKindleEmbedRecordAsync().ConfigureAwait(false))
                     {
-                        KindleEmbedRecord = rec;
+                        KindleEmbedRecord = record;
                         restOfRecords[i] = null;
                     }
 
                     // Set the "real" rest and the content records
-                    RestOfRecords = restOfRecords.Where(rec => rec != null).ToList();
+                    RestOfRecords = restOfRecords.Where(record => record != null).ToList();
                     ContentRecords = _allRecords.Take(pageCount).ToList();
                 }
             }

@@ -30,19 +30,19 @@
             _throwIfNoExthHeader = throwIfNoExthHeader;
         }
 
-        private Stream _stream;
+        private Stream _azwStream;
 
-        public async Task ReadMetadataAsync(Stream stream)
+        public async Task ReadMetadataAsync(Stream azwStream)
         {
-            _stream = stream;
+            _azwStream = azwStream;
 
-            await _pdbHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
+            await _pdbHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
 
-            await _palmDocHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
+            await _palmDocHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
             _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
 
             // This also reads the exthheader
-            await _mobiHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
+            await _mobiHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
 
             if (_mobiHeader.ExthHeader == null && _throwIfNoExthHeader)
             {
@@ -70,7 +70,7 @@
             var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
             var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
 
-            PageRecords = new PageRecords(_stream, _pdbHeader.Records, ImageType.SD,
+            PageRecords = new PageRecords(_azwStream, _pdbHeader.Records, ImageType.SD,
                 _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
                 coverIndexOffset, thumbIndexOffset);
 

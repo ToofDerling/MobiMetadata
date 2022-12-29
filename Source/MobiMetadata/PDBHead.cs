@@ -2,37 +2,37 @@
 {
     public class PDBHead : BaseHead
     {
-        private static readonly List<Attr> pdbHeadAttrs = new();
+        private static readonly List<Attr> _pdbHeadAttrs = new();
 
-        private static readonly Attr NameAttr = new(32, pdbHeadAttrs);
+        private static readonly Attr _nameAttr = new(32, _pdbHeadAttrs);
 
-        private static readonly Attr AttributesAttr = new(2, pdbHeadAttrs);
+        private static readonly Attr _attributesAttr = new(2, _pdbHeadAttrs);
 
-        private static readonly Attr VersionAttr = new(2, pdbHeadAttrs);
+        private static readonly Attr _versionAttr = new(2, _pdbHeadAttrs);
 
-        private static readonly Attr CreationDateAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _creationDateAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr ModificationDateAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _modificationDateAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr LastBackupDateAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _lastBackupDateAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr ModificationNumberAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _modificationNumberAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr AppInfoIDAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _appInfoIDAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr SortInfoIDAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _sortInfoIDAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr TypeAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _typeAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr CreatorAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _creatorAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr UniqueIDSeedAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _uniqueIDSeedAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr NextRecordListIDAttr = new(4, pdbHeadAttrs);
+        private static readonly Attr _nextRecordListIDAttr = new(4, _pdbHeadAttrs);
 
-        private static readonly Attr NumRecordsAttr = new(2);
+        private static readonly Attr _numRecordsAttr = new(2);
 
-        private static readonly Attr GapToDataAttr = new(2);
+        private static readonly Attr _gapToDataAttr = new(2);
 
         private PDBRecordInfo[] _recordInfoList;
 
@@ -50,10 +50,10 @@
 
         internal override async Task ReadHeaderAsync(Stream stream)
         {
-            var attrLen = pdbHeadAttrs.Sum(x => x.Length);
+            var attrLen = _pdbHeadAttrs.Sum(x => x.Length);
             await SkipOrReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
 
-            NumRecordsData = new byte[NumRecordsAttr.Length];
+            NumRecordsData = new byte[_numRecordsAttr.Length];
             await stream.ReadAsync(NumRecordsData).ConfigureAwait(false);
 
             var recordCount = NumRecords;
@@ -81,38 +81,38 @@
             }
 
             // Finally move on to next header
-            stream.Position += GapToDataAttr.Length;
+            stream.Position += _gapToDataAttr.Length;
         }
 
         public bool IsHDImageContainer => TypeAsString == "RBIN" && CreatorAsString == "CONT";
 
-        public string Name => GetPropAsUtf8RemoveNull(NameAttr);
+        public string Name => GetPropAsUtf8RemoveNull(_nameAttr);
 
-        public ushort Attributes => GetPropAsUshort(AttributesAttr);
+        public ushort Attributes => GetPropAsUshort(_attributesAttr);
 
-        public ushort Version => GetPropAsUshort(VersionAttr);
+        public ushort Version => GetPropAsUshort(_versionAttr);
 
-        public uint CreationDate => GetPropAsUint(CreationDateAttr);
+        public uint CreationDate => GetPropAsUint(_creationDateAttr);
 
-        public uint ModificationDate => GetPropAsUint(ModificationDateAttr);
+        public uint ModificationDate => GetPropAsUint(_modificationDateAttr);
 
-        public uint LastBackupDate => GetPropAsUint(LastBackupDateAttr);
+        public uint LastBackupDate => GetPropAsUint(_lastBackupDateAttr);
 
-        public uint ModificationNumber => GetPropAsUint(ModificationNumberAttr);
+        public uint ModificationNumber => GetPropAsUint(_modificationNumberAttr);
 
-        public uint AppInfoID => GetPropAsUint(AppInfoIDAttr);
+        public uint AppInfoID => GetPropAsUint(_appInfoIDAttr);
 
-        public uint SortInfoID => GetPropAsUint(SortInfoIDAttr);
+        public uint SortInfoID => GetPropAsUint(_sortInfoIDAttr);
 
-        public uint Type => GetPropAsUint(TypeAttr);
+        public uint Type => GetPropAsUint(_typeAttr);
 
-        public string TypeAsString => GetPropAsUtf8RemoveNull(TypeAttr);
+        public string TypeAsString => GetPropAsUtf8RemoveNull(_typeAttr);
 
-        public uint Creator => GetPropAsUint(CreatorAttr);
+        public uint Creator => GetPropAsUint(_creatorAttr);
 
-        public string CreatorAsString => GetPropAsUtf8RemoveNull(CreatorAttr);
+        public string CreatorAsString => GetPropAsUtf8RemoveNull(_creatorAttr);
 
-        public uint UniqueIDSeed => GetPropAsUint(UniqueIDSeedAttr);
+        public uint UniqueIDSeed => GetPropAsUint(_uniqueIDSeedAttr);
 
         public ushort NumRecords => GetDataAsUshort(NumRecordsData);
 

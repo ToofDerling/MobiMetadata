@@ -2,21 +2,21 @@
 {
     public class PalmDOCHead : BaseHead
     {
-        private static readonly List<Attr> palmDocHeadAttrs = new();
+        private static readonly List<Attr> _palmDocHeadAttrs = new();
 
-        private static readonly Attr CompressionAttr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _compressionAttr = new(2, _palmDocHeadAttrs);
 
-        private static readonly Attr Unused0Attr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _unused0Attr = new(2, _palmDocHeadAttrs);
 
-        private static readonly Attr TextLengthAttr = new(4, palmDocHeadAttrs);
+        private static readonly Attr _textLengthAttr = new(4, _palmDocHeadAttrs);
 
-        private static readonly Attr RecordCountAttr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _recordCountAttr = new(2, _palmDocHeadAttrs);
 
-        private static readonly Attr RecordSizeAttr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _recordSizeAttr = new(2, _palmDocHeadAttrs);
 
-        private static readonly Attr EncryptionTypeAttr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _encryptionTypeAttr = new(2, _palmDocHeadAttrs);
 
-        private static readonly Attr Unused1Attr = new(2, palmDocHeadAttrs);
+        private static readonly Attr _unused1Attr = new(2, _palmDocHeadAttrs);
 
         public long Position { get; private set; }
 
@@ -30,12 +30,12 @@
         {
             Position = stream.Position;
 
-            var attrLen = palmDocHeadAttrs.Sum(x => x.Length);
+            var attrLen = _palmDocHeadAttrs.Sum(x => x.Length);
             await SkipOrReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);
         }
 
         //Properties
-        public ushort Compression => GetPropAsUshort(CompressionAttr);
+        public ushort Compression => GetPropAsUshort(_compressionAttr);
 
         public string CompressionAsString => Compression switch
         {
@@ -45,13 +45,13 @@
             _ => $"Unknown",
         };
 
-        public uint TextLength => GetPropAsUint(TextLengthAttr);
+        public uint TextLength => GetPropAsUint(_textLengthAttr);
 
-        public ushort RecordCount => GetPropAsUshort(RecordCountAttr);
+        public ushort RecordCount => GetPropAsUshort(_recordCountAttr);
 
-        public ushort RecordSize => GetPropAsUshort(RecordSizeAttr);
+        public ushort RecordSize => GetPropAsUshort(_recordSizeAttr);
 
-        public ushort EncryptionType => GetPropAsUshort(EncryptionTypeAttr);
+        public ushort EncryptionType => GetPropAsUshort(_encryptionTypeAttr);
 
         public string EncryptionTypeAsString
         {
