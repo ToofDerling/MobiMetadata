@@ -17,8 +17,7 @@
         public PageRecords? PageRecordsHD { get; private set; }
 
         /// <summary>
-        /// The Azw6Header is read when PageRecordsHD is not null, ie when we're processing
-        /// a HD image container in a azw6 or azw.res file.
+        /// The Azw6Header is read when processing a HD image container in an azw6 or azw.res file.
         /// </summary>
         public Azw6Head? Azw6Header { get; private set; }
 
@@ -42,15 +41,15 @@
         {
             _azwStream = azwStream;
 
-            await _pdbHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
+            await PdbHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
 
-            await _palmDocHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
-            _mobiHeader.PreviousHeaderPosition = _palmDocHeader.Position;
+            await PalmDocHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
+            MobiHeader.PreviousHeaderPosition = PalmDocHeader.Position;
 
             // This also reads the exthheader
-            await _mobiHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
+            await MobiHeader.ReadHeaderAsync(azwStream).ConfigureAwait(false);
 
-            if (_mobiHeader.ExthHeader == null && _throwIfNoExthHeader)
+            if (MobiHeader.ExthHeader == null && _throwIfNoExthHeader)
             {
                 throw new MobiMetadataException($"No EXTHHeader");
             }
@@ -58,6 +57,11 @@
 
         public async Task ReadImageRecordsAsync()
         {
+            if (PdbHeader == null || MobiHeader == null)
+            {
+                throw new MobiMetadataException("Must call ReadMetadataAsync before calling ReadImageRecordsAsync");
+            }
+
             if (PdbHeader.SkipRecords)
             {
                 throw new MobiMetadataException($"Cannot read image records ({nameof(PdbHeader.SkipRecords)} is {PdbHeader.SkipRecords}).");
@@ -73,11 +77,11 @@
                 throw new MobiMetadataException($"Cannot read image records ({nameof(MobiHeader.SkipExthHeader)} is {MobiHeader.SkipExthHeader}).");
             }
 
-            var coverIndexOffset = _mobiHeader.ExthHeader.CoverOffset;
-            var thumbIndexOffset = _mobiHeader.ExthHeader.ThumbOffset;
+            var coverIndexOffset = MobiHeader.ExthHeader.CoverOffset;
+            var thumbIndexOffset = MobiHeader.ExthHeader.ThumbOffset;
 
-            PageRecords = new PageRecords(_azwStream, _pdbHeader.Records, ImageType.SD,
-                _mobiHeader.FirstImageIndex, _mobiHeader.LastContentRecordNumber,
+            PageRecords = new PageRecords(_azwStream, PdbHeader.Records, ImageType.SD,
+                MobiHeader.FirstImageIndex, MobiHeader.LastContentRecordNumber,
                 coverIndexOffset, thumbIndexOffset);
 
             await PageRecords.AnalyzePageRecordsAsync().ConfigureAwait(false);
@@ -85,21 +89,45 @@
 
         public async Task ReadHDImageRecordsAsync(Stream hdContainerStream)
         {
-            var pdbHeader = new PDBHead();
-            await pdbHeader.ReadHeaderAsync(hdContainerStream).ConfigureAwait(false);
+            if (PdbHeader == null || MobiHeader == null)
+            {
+                throw new MobiMetadataException("Must call ReadMetadataAsync before calling ReadHDImageRecordsAsync");
+            }
 
-            if (!pdbHeader.IsHDImageContainer)
+            if (MobiHeader.SkipProperties)
+            {
+                throw new MobiMetadataException($"Cannot read HD image records ({nameof(MobiHeader.SkipProperties)} is {MobiHeader.SkipProperties}).");
+            }
+
+            if (MobiHeader.SkipExthHeader)
+            {
+                throw new MobiMetadataException($"Cannot read HD image records ({nameof(MobiHeader.SkipExthHeader)} is {MobiHeader.SkipExthHeader}).");
+            }
+
+            var hdPdbHeader = new PDBHead();
+            await hdPdbHeader.ReadHeaderAsync(hdContainerStream).ConfigureAwait(false);
+
+            if (!hdPdbHeader.IsHDImageContainer)
             {
                 throw new MobiMetadataException("Not a HD image container");
             }
 
-            // The azw6 header is the first pdb record 
+            // The azw6 header is the first pdb record in the HD container 
             Azw6Header = new Azw6Head(skipExthHeader: true);
             await Azw6Header.ReadHeaderAsync(hdContainerStream).ConfigureAwait(false);
 
-            PageRecordsHD = new PageRecords(hdContainerStream, pdbHeader.Records, ImageType.HD,
-                1, (ushort)(pdbHeader.Records.Length - 1),
-                MobiHeader.ExthHeader.CoverOffset, MobiHeader.ExthHeader.ThumbOffset);
+            if (Azw6Header.Title != MobiHeader.FullName) 
+            {
+                throw new MobiMetadataException(
+                    $"{nameof(Azw6Header.Title)}/{nameof(MobiHeader.FullName)} mismatch: {Azw6Header.Title} vs {MobiHeader.FullName}");
+            }
+
+            var coverIndexOffset = MobiHeader.ExthHeader.CoverOffset;
+            var thumbIndexOffset = MobiHeader.ExthHeader.ThumbOffset;
+
+            PageRecordsHD = new PageRecords(hdContainerStream, hdPdbHeader.Records, ImageType.HD,
+                1, (ushort)(hdPdbHeader.Records.Length - 1),
+                coverIndexOffset, thumbIndexOffset);
 
             await PageRecordsHD.AnalyzePageRecordsHDAsync(PageRecords.ContentRecords.Count).ConfigureAwait(false);
         }
