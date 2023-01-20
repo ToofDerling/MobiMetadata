@@ -73,17 +73,9 @@ namespace MobiMetadata
         {
             var idLen = recordId.Length;
 
-            var bytes = ArrayPool<byte>.Shared.Rent(idLen);
-            try
-            {
-                var data = await ReadDataAsync(bytes, idLen).ConfigureAwait(false);
+            var data = await ReadDataAsync(idLen).ConfigureAwait(false);
 
-                return data.Span.SequenceEqual(recordId.Span);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(bytes);
-            }
+            return data.Span.SequenceEqual(recordId.Span);
         }
 
         protected virtual int GetMagic()
@@ -91,17 +83,25 @@ namespace MobiMetadata
             return 0;
         }
 
-        protected async Task<Memory<byte>> ReadDataAsync(byte[] bytes, int length)
+        protected async Task<Memory<byte>> ReadDataAsync(int length)
         {
-            var memory = bytes.AsMemory(0, length);
-            var read = await _stream.ReadAsync(memory).ConfigureAwait(false);
-
-            if (read != length)
+            var bytes = ArrayPool<byte>.Shared.Rent(length);
+            try
             {
-                throw new MobiMetadataException($"Error reading record. Expected {length} bytes, got {read}");
-            }
+                var memory = bytes.AsMemory(0, length);
+                var read = await _stream.ReadAsync(memory).ConfigureAwait(false);
 
-            return memory;
+                if (read != length)
+                {
+                    throw new MobiMetadataException($"Error reading record. Expected {length} bytes, got {read}");
+                }
+
+                return memory;
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(bytes);
+            }
         }
 
         public async Task<bool> TryWriteHDImageDataAsync(params Stream[] streams)
@@ -116,36 +116,28 @@ namespace MobiMetadata
 
         private async Task<bool> WriteDataCoreAsync(Memory<byte>? recordId = null, params Stream[] streams)
         {
-            var bytes = ArrayPool<byte>.Shared.Rent(_len);
-            try
+            _stream.Position = _pos;
+
+            var memory = await ReadDataAsync(_len).ConfigureAwait(false);
+
+            // Only write data if this record begins with the specified recordId 
+            if (recordId.HasValue && !memory.Span.StartsWith(recordId.Value.Span))
             {
-                _stream.Position = _pos;
-
-                var memory = await ReadDataAsync(bytes, _len).ConfigureAwait(false);
-
-                // Only write data if this record begins with the specified recordId 
-                if (recordId.HasValue && !memory.Span.StartsWith(recordId.Value.Span))
-                {
-                    return false;
-                }
-
-                var magic = GetMagic();
-                memory = magic > 0 ? memory[magic..] : memory;
-
-                foreach (var stream in streams)
-                {
-                    if (stream != null) 
-                    {
-                        await stream.WriteAsync(memory).ConfigureAwait(false);
-                    }
-                }
-
-                return true;
+                return false;
             }
-            finally
+
+            var magic = GetMagic();
+            memory = magic > 0 ? memory[magic..] : memory;
+
+            foreach (var stream in streams)
             {
-                ArrayPool<byte>.Shared.Return(bytes);
+                if (stream != null)
+                {
+                    await stream.WriteAsync(memory).ConfigureAwait(false);
+                }
             }
+
+            return true;
         }
     }
 }
