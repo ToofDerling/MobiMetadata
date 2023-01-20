@@ -63,7 +63,7 @@
             SkipExthHeader = skipExthHeader;
         }
 
-        internal override async Task ReadHeaderAsync(Stream stream)
+        public override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = _azw6HeadAttrs.Sum(x => x.Length);
 

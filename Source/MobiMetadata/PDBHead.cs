@@ -48,7 +48,7 @@
             SkipRecords = skipRecords;
         }
 
-        internal override async Task ReadHeaderAsync(Stream stream)
+        public override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = _pdbHeadAttrs.Sum(x => x.Length);
             await SkipOrReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);

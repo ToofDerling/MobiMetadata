@@ -14,7 +14,7 @@
         
         private Memory<byte> RecordsData { get; set; }
 
-        internal override async Task ReadHeaderAsync(Stream stream)
+        public override async Task ReadHeaderAsync(Stream stream)
         {
             var attrLen = _exthHeadAttrs.Sum(x => x.Length);
             await ReadHeaderDataAsync(stream, attrLen).ConfigureAwait(false);

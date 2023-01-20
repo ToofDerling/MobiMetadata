@@ -109,7 +109,7 @@
             }
         }
 
-        internal override async Task ReadHeaderAsync(Stream stream)
+        public override async Task ReadHeaderAsync(Stream stream)
         {
             var mobiHeaderOffset = stream.Position;
 

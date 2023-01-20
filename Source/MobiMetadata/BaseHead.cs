@@ -31,7 +31,7 @@ namespace MobiMetadata
 
         public bool SkipRecords { get; set; }
 
-        internal abstract Task ReadHeaderAsync(Stream stream);
+        public abstract Task ReadHeaderAsync(Stream stream);
 
         protected Memory<byte> HeaderData { get; set; }
 

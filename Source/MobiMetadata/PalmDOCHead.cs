@@ -26,7 +26,7 @@
             SkipRecords = skipRecords;
         }
 
-        internal override async Task ReadHeaderAsync(Stream stream)
+        public override async Task ReadHeaderAsync(Stream stream)
         {
             Position = stream.Position;
 
