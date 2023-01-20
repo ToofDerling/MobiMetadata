@@ -16,6 +16,12 @@
 
         public PageRecords? PageRecordsHD { get; private set; }
 
+        /// <summary>
+        /// The Azw6Header is read when PageRecordsHD is not null, ie when we're processing
+        /// a HD image container in a azw6 or azw.res file.
+        /// </summary>
+        public Azw6Head? Azw6Header { get; private set; }
+
         private readonly bool _throwIfNoExthHeader;
 
         public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
@@ -57,7 +63,7 @@
                 throw new MobiMetadataException($"Cannot read image records ({nameof(PdbHeader.SkipRecords)} is {PdbHeader.SkipRecords}).");
             }
 
-            if (MobiHeader.SkipProperties) 
+            if (MobiHeader.SkipProperties)
             {
                 throw new MobiMetadataException($"Cannot read image records ({nameof(MobiHeader.SkipProperties)} is {MobiHeader.SkipProperties}).");
             }
@@ -86,6 +92,10 @@
             {
                 throw new MobiMetadataException("Not a HD image container");
             }
+
+            // The azw6 header is the first pdb record 
+            Azw6Header = new Azw6Head(skipExthHeader: true);
+            await Azw6Header.ReadHeaderAsync(hdContainerStream).ConfigureAwait(false);
 
             PageRecordsHD = new PageRecords(hdContainerStream, pdbHeader.Records, ImageType.HD,
                 1, (ushort)(pdbHeader.Records.Length - 1),

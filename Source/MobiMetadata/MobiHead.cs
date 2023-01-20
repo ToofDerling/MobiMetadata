@@ -93,6 +93,8 @@
 
         public bool SkipExthHeader { get; set; }
 
+        public EXTHHead ExthHeader { get; private set; }
+
         private Memory<byte> FullNameData { get; set; }
 
         public MobiHead(bool skipProperties = false, bool skipRecords = false, bool skipExthHeader = false)
@@ -156,8 +158,6 @@
                 await ExthHeader.ReadHeaderAsync(stream).ConfigureAwait(false);
             }
         }
-
-        public EXTHHead ExthHeader { get; private set; }
 
         //Properties
         public int ExthHeaderSize => ExthHeader == null ? -1 : ExthHeader.Size;
