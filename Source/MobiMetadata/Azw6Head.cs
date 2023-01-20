@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace MobiMetadata
+﻿namespace MobiMetadata
 {
     public class Azw6Head : BaseHead
     {
@@ -23,27 +21,27 @@ namespace MobiMetadata
         */
         private static readonly List<Attr> _azw6HeadAttrs = new();
 
-        private static readonly Attr _identifierAttr = new(4, _azw6HeadAttrs); //48
+        private static readonly Attr _identifierAttr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _headerLengthAttr = new(4, _azw6HeadAttrs); //44
+        private static readonly Attr _headerLengthAttr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _typeAttr = new(2, _azw6HeadAttrs); //40
-        private static readonly Attr _countAttr = new(2, _azw6HeadAttrs); //38
+        private static readonly Attr _typeAttr = new(2, _azw6HeadAttrs);
+        private static readonly Attr _countAttr = new(2, _azw6HeadAttrs);
 
-        private static readonly Attr _codepageAttr = new(4, _azw6HeadAttrs); //36
+        private static readonly Attr _codepageAttr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _unknown0Attr = new(4, _azw6HeadAttrs); //32
-        private static readonly Attr _unknown1Attr = new(4, _azw6HeadAttrs); //28
+        private static readonly Attr _unknown0Attr = new(4, _azw6HeadAttrs);
+        private static readonly Attr _unknown1Attr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _rescRecordsCountAttr = new(4, _azw6HeadAttrs); //24
-        private static readonly Attr _rescRecordsWithoutPlaceholdersCountAttr = new(4, _azw6HeadAttrs); //20
+        private static readonly Attr _rescRecordsCountAttr = new(4, _azw6HeadAttrs);
+        private static readonly Attr _rescRecordsWithoutPlaceholdersCountAttr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _offsetToHrefsAttr = new(4, _azw6HeadAttrs); //16
+        private static readonly Attr _offsetToHrefsAttr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _unknown2Attr = new(4, _azw6HeadAttrs); //12
+        private static readonly Attr _unknown2Attr = new(4, _azw6HeadAttrs);
 
-        private static readonly Attr _titleOffsetAttr = new(4, _azw6HeadAttrs); //8
-        private static readonly Attr _titleLengthAttr = new(4, _azw6HeadAttrs); //4
+        private static readonly Attr _titleOffsetAttr = new(4, _azw6HeadAttrs);
+        private static readonly Attr _titleLengthAttr = new(4, _azw6HeadAttrs);
 
         public bool SkipExthHeader { get; set; }
 
