@@ -18,9 +18,11 @@
 
         public PageRecord? Len1992Record { get; set; }
 
-        public PageRecord? KindleEmbedRecord { get; set; }
-
         public RescRecord RescRecord { get; set; }
+
+        // Special record for the HD image container.
+
+        public PageRecord? KindleEmbedRecord { get; set; }
 
         public PageRecords(Stream stream, PDBRecordInfo[] pdbRecords, ImageType imageType,
             uint firstImageIndex, ushort lastImageIndex, uint coverIndexOffset, uint thumbIndexOffset)
@@ -76,7 +78,7 @@
             for (; rescIndex >= 0; rescIndex--)
             {
                 var record = _allRecords[rescIndex];
-                
+
                 var rescRecord = await record.GetRescRecordAsync().ConfigureAwait(false);
                 if (rescRecord != null)
                 {
@@ -157,11 +159,11 @@
                         KindleEmbedRecord = record;
                         restOfRecords[i] = null;
                     }
-
-                    // Set the "real" rest and the content records
-                    RestOfRecords = restOfRecords.Where(record => record != null).ToList();
-                    ContentRecords = _allRecords.Take(pageCount).ToList();
                 }
+
+                // Set the "real" rest and the content records
+                RestOfRecords = restOfRecords.Where(record => record != null).ToList();
+                ContentRecords = _allRecords.Take(pageCount).ToList();
             }
             else
             {
