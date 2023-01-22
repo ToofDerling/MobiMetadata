@@ -4,6 +4,8 @@ namespace MobiMetadata
 {
     public abstract class BaseHead
     {
+        public FileInfo? Path { get; set; }
+
         public sealed class Attr
         {
             public Attr(int length, List<Attr> attrs = null!)
