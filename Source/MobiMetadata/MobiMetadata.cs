@@ -119,7 +119,7 @@
             if (Azw6Header.Title != MobiHeader.FullName) 
             {
                 throw new MobiMetadataException(
-                    $"{nameof(Azw6Header.Title)}/{nameof(MobiHeader.FullName)} mismatch: {Azw6Header.Title} vs {MobiHeader.FullName}");
+                    $"{nameof(Azw6Header.Title)} / {nameof(MobiHeader.FullName)} mismatch: [{Azw6Header.Title}] vs [{MobiHeader.FullName}]");
             }
 
             var coverIndexOffset = MobiHeader.ExthHeader.CoverOffset;
