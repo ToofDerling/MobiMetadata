@@ -139,13 +139,13 @@
 
             if (hdContainerStream != null)
             {
-                await SetHdContainerRecordsAsync(hdContainerStream);
+                await SetHdContainerRecordsAsync(hdContainerStream).ConfigureAwait(false);
                 await HdContainerRecords!.AnalyzeHdContainerRecordsAsync(PageRecords.ImageRecords.Count).ConfigureAwait(false);
             }
 
             if (MobiHeader.ExthHeader.BookType != "comic")
             {
-                await HandleFontRecordsForNonComicBookTypesAsync();
+                await HandleFontRecordsForNonComicBookTypesAsync().ConfigureAwait(false);
             }
 
             // Merge cover
@@ -159,8 +159,8 @@
                 MergedCoverRecord = PageRecords.CoverRecord;
             }
 
-            // Merge image
-            var mergedImageRecords = new List<PageRecord>();
+            // Merge images
+            var mergedImageRecords = new List<PageRecord>(PageRecords.ImageRecords.Count);
 
             for (int i = 0, sz = PageRecords.ImageRecords.Count; i < sz; i++)
             {
@@ -203,7 +203,7 @@
 
             for (int i = 0, sz = PageRecords.ImageRecords.Count; i < sz; i++)
             {
-                if (await PageRecords.ImageRecords[i].IsFontRecordAsync())
+                if (await PageRecords.ImageRecords[i].IsFontRecordAsync().ConfigureAwait(false))
                 {
                     fontRecords.Add(PageRecords.ImageRecords[i]);
                     PageRecords.ImageRecords[i] = null;
