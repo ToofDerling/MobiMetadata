@@ -18,6 +18,8 @@ namespace MobiMetadata
             public static Memory<byte> DATP => Encoding.ASCII.GetBytes("DATP");
 
             public static Memory<byte> RESC => Encoding.ASCII.GetBytes("RESC");
+            
+            public static Memory<byte> FONT => Encoding.ASCII.GetBytes("FONT");
         }
 
         public PageRecord(Stream stream, long pos, uint len)
@@ -53,11 +55,23 @@ namespace MobiMetadata
             return await IsRecordIdAsync(RecordId.DATP).ConfigureAwait(false);
         }
 
+        public async Task<bool> IsFontRecordAsync()
+        {
+            _stream.Position = _pos;
+
+            return await IsRecordIdAsync(RecordId.FONT).ConfigureAwait(false);
+        }
+
         public async Task<bool> IsKindleEmbedRecordAsync()
         {
             _stream.Position = _pos;
 
             return await IsRecordIdAsync(RecordId.KindleEmbed).ConfigureAwait(false);
+        }
+
+        public bool IsCresPlaceHolder()
+        {
+            return _len == 4;
         }
 
         public async Task<bool> IsCresRecordAsync()
@@ -103,18 +117,13 @@ namespace MobiMetadata
                 ArrayPool<byte>.Shared.Return(bytes);
             }
         }
-
-        public async Task<bool> TryWriteHDImageDataAsync(params Stream[] streams)
-        {
-            return await WriteDataCoreAsync(RecordId.CRES, streams).ConfigureAwait(false);
-        }
-
-        public async Task WriteDataAsync(params Stream[] streams)
+          
+        public virtual async Task WriteDataAsync(params Stream[] streams)
         {
             await WriteDataCoreAsync(null!, streams).ConfigureAwait(false);
         }
 
-        private async Task<bool> WriteDataCoreAsync(Memory<byte>? recordId = null, params Stream[] streams)
+        protected async Task<bool> WriteDataCoreAsync(Memory<byte>? recordId = null, params Stream[] streams)
         {
             _stream.Position = _pos;
 
@@ -127,7 +136,7 @@ namespace MobiMetadata
             }
 
             var magic = GetMagic();
-            memory = magic > 0 ? memory[magic..] : memory;
+            memory = magic > 0 && magic < memory.Length ? memory[magic..] : memory;
 
             foreach (var stream in streams)
             {

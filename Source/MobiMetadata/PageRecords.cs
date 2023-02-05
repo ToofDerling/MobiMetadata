@@ -4,7 +4,7 @@
     {
         private readonly List<PageRecord> _allRecords;
 
-        public List<PageRecord> ContentRecords { get; set; }
+        public List<PageRecord> ImageRecords { get; set; }
 
         public List<PageRecord> RestOfRecords { get; set; }
 
@@ -19,6 +19,8 @@
         public PageRecord? Len1992Record { get; set; }
 
         public RescRecord RescRecord { get; set; }
+
+        public List<PageRecord> FontRecords { get; set; }
 
         // Special record for the HD image container.
 
@@ -46,27 +48,27 @@
                 var dataOffset = pdbRecord.RecordDataOffset;
                 var nextRecordOffset = nextRecord.RecordDataOffset;
 
-                PageRecord imageRecord;
+                PageRecord pageRecord;
                 if (imageType == ImageType.SD)
                 {
-                    imageRecord = new PageRecord(stream, dataOffset, nextRecordOffset - dataOffset);
+                    pageRecord = new PageRecord(stream, dataOffset, nextRecordOffset - dataOffset);
                 }
                 else
                 {
-                    imageRecord = new PageRecordHD(stream, dataOffset, nextRecordOffset - dataOffset);
+                    pageRecord = new PageRecordHD(stream, dataOffset, nextRecordOffset - dataOffset);
                 }
 
                 if (coverIndexOffset > 0 && index == coverIndex)
                 {
-                    CoverRecord = imageRecord;
+                    CoverRecord = pageRecord;
                 }
                 else if (thumbIndexOffset > 0 && index == thumbIndex)
                 {
-                    ThumbImage = imageRecord;
+                    ThumbImage = pageRecord;
                 }
                 else
                 {
-                    _allRecords.Add(imageRecord);
+                    _allRecords.Add(pageRecord);
                 }
             }
         }
@@ -130,20 +132,20 @@
 
                 // Set the "real" rest and the content records
                 RestOfRecords = restOfRecords.Where(record => record != null).ToList();
-                ContentRecords = _allRecords.Take(RescRecord.PageCount).ToList();
+                ImageRecords = _allRecords.Take(RescRecord.PageCount).ToList();
             }
             else
             {
-                ContentRecords = _allRecords;
+                ImageRecords = _allRecords;
             }
 
-            if (ContentRecords.Count < RescRecord.PageCount)
+            if (ImageRecords.Count < RescRecord.PageCount)
             {
-                throw new MobiMetadataException($"{nameof(ContentRecords)} {ContentRecords.Count} < {nameof(RescRecord.PageCount)} {RescRecord.PageCount}");
+                throw new MobiMetadataException($"{nameof(ImageRecords)} {ImageRecords.Count} < {nameof(RescRecord.PageCount)} {RescRecord.PageCount}");
             }
         }
-
-        public async Task AnalyzePageRecordsHDAsync(int pageCount)
+  
+        public async Task AnalyzeHdContainerRecordsAsync(int pageCount)
         {
             if (_allRecords.Count > pageCount)
             {
@@ -161,18 +163,18 @@
                     }
                 }
 
-                // Set the "real" rest and the content records
+                // Set the "real" rest and the image records
                 RestOfRecords = restOfRecords.Where(record => record != null).ToList();
-                ContentRecords = _allRecords.Take(pageCount).ToList();
+                ImageRecords = _allRecords.Take(pageCount).ToList();
             }
             else
             {
-                ContentRecords = _allRecords;
+                ImageRecords = _allRecords;
             }
 
-            if (ContentRecords.Count != pageCount)
+            if (ImageRecords.Count != pageCount)
             {
-                throw new MobiMetadataException($"HD container pageCount {ContentRecords.Count} vs SD pageCount {pageCount} mismatch?");
+                throw new MobiMetadataException($"HD container pageCount {ImageRecords.Count} vs SD pageCount {pageCount} mismatch?");
             }
         }
     }
