@@ -8,6 +8,8 @@ MobiMetadata targets .NET 6.0, is fully async, and uses a lot of recent language
 
 <pre>
 var stream = File.Open(azwFile);
+var hdStream = File.Open(azwResFile);
+
 var metadata = new MobiMetadata();
 
 // This will read all properties and records (except for image records) in all headers 
@@ -16,9 +18,6 @@ await metadata.ReadMetadataAsync(stream);
 var title = metadata.MobiHeader.FullName;
 var updatedTitle = metadata.MobiHeader.ExthHeader.UpdatedTitle;
 var publisher = metadata.MobiHeader.ExthHeader.Publisher;
-
-// Read the HD images in the azw.res file
-var hdStream = File.Open(azwResFile);
 
 // Read the image records in both the azw and azw.res file (if you don't have an azw.res 
 // file available pass null to this method). Note that this doesn't read the actual image
