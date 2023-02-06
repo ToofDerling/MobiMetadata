@@ -17,36 +17,25 @@ var title = metadata.MobiHeader.FullName;
 var updatedTitle = metadata.MobiHeader.ExthHeader.UpdatedTitle;
 var publisher = metadata.MobiHeader.ExthHeader.Publisher;
 
-// Read the SD images in the azw file
-await metadata.ReadImageRecordsAsync();
-
 // Read the HD images in the azw.res file
 var hdStream = File.Open(azwResFile);
-await metadata.ReadHDImageRecordsAsync(hdStream);
 
-// Save the HD cover if available
-if (metadata.PageRecordsHD != null && metadata.PageRecordsHD.CoverRecord != null 
-    && await metadata.PageRecordsHD.CoverRecord.TryWriteHDImageDataAsync(yourStream))
-{
-   // Got a HD cover
-}
+// Read the image records in both the azw and azw.res file (if you don't have an azw.res 
+// file available pass null to this method). Note that this doesn't read the actual image
+// data, just the containing records 
+await metadata.SetImageRecordsAsync(hdStream);
 
-// Save the SD cover if available
-if (metadata.PageRecords.CoverRecord != null)
+// Save the cover if available. The MergedCoverRecord contains the HD cover if available, 
+// else the SD cover or null if no cover record was found. 
+if (metadata.MergedCoverRecord != null)
 {
-    await metadata.PageRecords.CoverRecord.WriteDataAsync(yourStream);
+    await metadata.MergedCoverRecord.WriteDataAsync(yourCoverStream);
 }
 
 // Loop through pages
-for (int i = 0; i < = metadata.PageRecords.ContentRecords.Count; i++)
+for (int i = 0; i < = metadata.PageRecords.MergedImageRecords.Count; i++)
 {
-    // Try to save the hd image
-    if (metadata.PageRecordsHD == null 
-        || !await hdImageRecords.ContentRecords[i].TryWriteHDImageDataAsync(yourStream))
-    {
-        // Fall back on the sd image 
-        await metadata.PageRecords.ContentRecords[i].WriteDataAsync(yourStream);
-    }
+    await metadata.PageRecords.MergedImageRecords[i].WriteDataAsync(yourPageStream);
 }
 </pre>
 
