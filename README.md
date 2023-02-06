@@ -34,6 +34,7 @@ if (metadata.MergedCoverRecord != null)
 // Loop through pages
 for (int i = 0; i < = metadata.MergedImageRecords.Count; i++)
 {
+    // Similar to MergedCoverRecord this contains the HD image if available, else the SD image. 
     await metadata.MergedImageRecords[i].WriteDataAsync(yourPageStream);
 }
 </pre>
