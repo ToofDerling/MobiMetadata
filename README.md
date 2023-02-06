@@ -32,9 +32,9 @@ if (metadata.MergedCoverRecord != null)
 }
 
 // Loop through pages
-for (int i = 0; i < = metadata.PageRecords.MergedImageRecords.Count; i++)
+for (int i = 0; i < = metadata.MergedImageRecords.Count; i++)
 {
-    await metadata.PageRecords.MergedImageRecords[i].WriteDataAsync(yourPageStream);
+    await metadata.MergedImageRecords[i].WriteDataAsync(yourPageStream);
 }
 </pre>
 
