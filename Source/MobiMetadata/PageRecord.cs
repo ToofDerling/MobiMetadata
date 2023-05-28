@@ -43,10 +43,7 @@ namespace MobiMetadata
             return rescRecord;
         }
 
-        public bool IsLen1992Record()
-        {
-            return _len == 1992;
-        }
+        public bool IsLen1992Record() => _len == 1992;
 
         public async Task<bool> IsDatpRecordAsync()
         {
@@ -69,10 +66,7 @@ namespace MobiMetadata
             return await IsRecordIdAsync(RecordId.KindleEmbed).ConfigureAwait(false);
         }
 
-        public bool IsCresPlaceHolder()
-        {
-            return _len == 4;
-        }
+        public bool IsCresPlaceHolder() => _len == 4;
 
         public async Task<bool> IsCresRecordAsync()
         {
@@ -92,10 +86,7 @@ namespace MobiMetadata
             return data.Span.SequenceEqual(recordId.Span);
         }
 
-        protected virtual int GetMagic()
-        {
-            return 0;
-        }
+        protected virtual int GetMagic() => 0;
 
         protected async Task<Memory<byte>> ReadDataAsync(int length)
         {
@@ -117,11 +108,8 @@ namespace MobiMetadata
                 ArrayPool<byte>.Shared.Return(bytes);
             }
         }
-          
-        public virtual async Task WriteDataAsync(params Stream[] streams)
-        {
-            await WriteDataCoreAsync(null!, streams).ConfigureAwait(false);
-        }
+
+        public virtual async Task WriteDataAsync(params Stream[] streams) => await WriteDataCoreAsync(null!, streams).ConfigureAwait(false);
 
         protected async Task<bool> WriteDataCoreAsync(Memory<byte>? recordId = null, params Stream[] streams)
         {

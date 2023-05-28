@@ -55,44 +55,21 @@ namespace MobiMetadata
             await stream.ReadAsync(HeaderData).ConfigureAwait(false);
         }
 
-        protected Memory<byte> GetPropData(Attr attr)
-        {
-            return attr.GetData(HeaderData);
-        }
+        protected Memory<byte> GetPropData(Attr attr) =>            attr.GetData(HeaderData);
 
-        protected string GetPropAsUtf8(Attr attr)
-        {
-            return GetDataAsUtf8(GetPropData(attr));
-        }
 
-        protected string GetPropAsUtf8RemoveNull(Attr attr)
-        {
-            return GetDataAsUtf8(GetPropData(attr)).Replace("\0", null);
-        }
+        protected string GetPropAsUtf8(Attr attr) => GetDataAsUtf8(GetPropData(attr));
 
-        protected string GetDataAsUtf8(Memory<byte> memory)
-        {
-            return Encoding.UTF8.GetString(memory.Span);
-        }
+        protected string GetPropAsUtf8RemoveNull(Attr attr) => GetDataAsUtf8(GetPropData(attr)).Replace("\0", null);
 
-        protected uint GetPropAsUint(Attr attr)
-        {
-            return GetDataAsUint(GetPropData(attr));
-        }
+        protected string GetDataAsUtf8(Memory<byte> memory) => Encoding.UTF8.GetString(memory.Span);
 
-        protected uint GetDataAsUint(Memory<byte> memory)
-        {
-            return Converter.ToUInt32(memory.Span);
-        }
+        protected uint GetPropAsUint(Attr attr) => GetDataAsUint(GetPropData(attr));
 
-        protected ushort GetPropAsUshort(Attr attr)
-        {
-            return GetDataAsUshort(GetPropData(attr));
-        }
+        protected uint GetDataAsUint(Memory<byte> memory) => Converter.ToUInt32(memory.Span);
 
-        protected ushort GetDataAsUshort(Memory<byte> memory)
-        {
-            return Converter.ToUInt16(memory.Span);
-        }
+        protected ushort GetPropAsUshort(Attr attr) => GetDataAsUshort(GetPropData(attr));
+
+        protected ushort GetDataAsUshort(Memory<byte> memory) => Converter.ToUInt16(memory.Span);
     }
 }

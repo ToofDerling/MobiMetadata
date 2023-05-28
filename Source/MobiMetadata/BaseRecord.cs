@@ -12,14 +12,8 @@
 
         private Memory<byte> RecordsData { get; set; }
 
-        protected Memory<byte> GetPropertyData(int pos, int len)
-        {
-            return RecordsData.Slice(_recordPosition + pos, len);
-        }
+        protected Memory<byte> GetPropertyData(int pos, int len) => RecordsData.Slice(_recordPosition + pos, len);
 
-        protected uint GetPropertyDataAsUint(int pos, int len)
-        {
-            return Converter.ToUInt32(GetPropertyData(pos, len).Span);
-        }
+        protected uint GetPropertyDataAsUint(int pos, int len) => Converter.ToUInt32(GetPropertyData(pos, len).Span);
     }
 }

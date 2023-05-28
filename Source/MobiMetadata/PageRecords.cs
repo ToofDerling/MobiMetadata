@@ -26,8 +26,8 @@
 
         public PageRecord? KindleEmbedRecord { get; set; }
 
-        public PageRecords(Stream stream, PDBRecordInfo[] pdbRecords, ImageType imageType,
-            uint firstImageIndex, ushort lastImageIndex, uint coverIndexOffset, uint thumbIndexOffset)
+        public PageRecords(Stream stream, PDBRecordInfo[] pdbRecords, ImageType imageType, uint firstImageIndex, ushort lastImageIndex, 
+            uint coverIndexOffset, uint thumbIndexOffset)
         {
             ImageType = imageType;
 
@@ -144,7 +144,7 @@
                 throw new MobiMetadataException($"{nameof(ImageRecords)} {ImageRecords.Count} < {nameof(RescRecord.PageCount)} {RescRecord.PageCount}");
             }
         }
-  
+
         public async Task AnalyzeHdContainerRecordsAsync(int pageCount)
         {
             if (_allRecords.Count > pageCount)

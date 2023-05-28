@@ -30,7 +30,8 @@ namespace MobiMetadata
             PageCount += count;
         }
 
-        public RescRecord(Stream stream, long pos, uint len) : base(stream, pos, len)
+        public RescRecord(Stream stream, long pos, uint len) 
+            : base(stream, pos, len)
         { }
 
         public async Task<string> GetPrettyPrintXmlAsync()

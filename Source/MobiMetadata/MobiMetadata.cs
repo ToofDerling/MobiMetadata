@@ -27,8 +27,7 @@
 
         private readonly bool _throwIfNoExthHeader;
 
-        public MobiMetadata(PDBHead pdbHeader = null, PalmDOCHead palmDocHeader = null, MobiHead mobiHeader = null,
-            bool throwIfNoExthHeader = false)
+        public MobiMetadata(PDBHead? pdbHeader = null, PalmDOCHead? palmDocHeader = null, MobiHead? mobiHeader = null, bool throwIfNoExthHeader = false)
         {
             _pdbHeader = pdbHeader ?? new PDBHead();
 
@@ -193,7 +192,7 @@
         }
 
         public bool IsHdPage(int pageIndex)
-        { 
+        {
             return HdContainerRecords != null && !HdContainerRecords.ImageRecords[pageIndex].IsCresPlaceHolder();
         }
 
