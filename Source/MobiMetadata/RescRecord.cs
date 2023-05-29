@@ -30,7 +30,7 @@ namespace MobiMetadata
             PageCount += count;
         }
 
-        public RescRecord(Stream stream, long pos, uint len) 
+        public RescRecord(Stream stream, long pos, uint len)
             : base(stream, pos, len)
         { }
 

@@ -2,7 +2,7 @@
 {
     public class PageRecordHD : PageRecord
     {
-        public PageRecordHD(Stream stream, long pos, uint len) 
+        public PageRecordHD(Stream stream, long pos, uint len)
             : base(stream, pos, len)
         {
         }

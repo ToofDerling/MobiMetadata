@@ -2,7 +2,7 @@
 {
     public class MobiMetadataException : Exception
     {
-        public MobiMetadataException(string message) 
+        public MobiMetadataException(string message)
             : base(message)
         {
         }

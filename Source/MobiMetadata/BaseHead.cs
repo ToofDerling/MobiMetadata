@@ -22,7 +22,7 @@ namespace MobiMetadata
             public int Position { get; set; }
 
             public Memory<byte> GetData(Memory<byte> memory)
-            { 
+            {
                 return memory.Slice(Position, Length);
             }
 
@@ -55,7 +55,7 @@ namespace MobiMetadata
             await stream.ReadAsync(HeaderData).ConfigureAwait(false);
         }
 
-        protected Memory<byte> GetPropData(Attr attr) =>            attr.GetData(HeaderData);
+        protected Memory<byte> GetPropData(Attr attr) => attr.GetData(HeaderData);
 
 
         protected string GetPropAsUtf8(Attr attr) => GetDataAsUtf8(GetPropData(attr));

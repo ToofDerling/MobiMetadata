@@ -11,7 +11,7 @@
         private static readonly Attr _recordCountAttr = new(4, _exthHeadAttrs);
 
         private EXTHRecord[] _recordList;
-        
+
         private Memory<byte> RecordsData { get; set; }
 
         public override async Task ReadHeaderAsync(Stream stream)
@@ -151,9 +151,9 @@
         public uint CreatorSoftware => GetRecordAsUint(204);
 
         public uint CreatorMajorVersion => GetRecordAsUint(205);
-        
+
         public uint CreatorMinorVersion => GetRecordAsUint(206);
-        
+
         public uint CreatorBuildNumber => GetRecordAsUint(207);
 
         public string WatermarkHexString => GetRecordAsString(208);
@@ -189,7 +189,7 @@
         public string Unknown526 => GetRecordAsString(526);
 
         public string PageProgressionDirection => GetRecordAsString(527);
-        
+
         public string OverrideKindleFonts => GetRecordAsString(528);
 
         public string Unknown529 => GetRecordAsString(529);

@@ -125,7 +125,7 @@
             {
                 await ReadExthHeaderAsync(stream, mobiHeaderOffset).ConfigureAwait(false);
             }
-            
+
             if (!SkipProperties)
             {
                 await ReadFullNameAsync(stream).ConfigureAwait(false);

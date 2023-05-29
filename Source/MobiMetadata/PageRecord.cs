@@ -18,7 +18,7 @@ namespace MobiMetadata
             public static Memory<byte> DATP => Encoding.ASCII.GetBytes("DATP");
 
             public static Memory<byte> RESC => Encoding.ASCII.GetBytes("RESC");
-            
+
             public static Memory<byte> FONT => Encoding.ASCII.GetBytes("FONT");
         }
 
