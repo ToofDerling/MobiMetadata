@@ -37,6 +37,14 @@
             var coverIndex = firstImageIndex + coverIndexOffset;
             var thumbIndex = firstImageIndex + thumbIndexOffset;
 
+            // If lastImageIndex is invalid grab as many records as we can and let the analyzer sort it out.
+            // This fixes a few cases of out of bounds exceptions indexing into pdbRecords.
+            var nextToLastIndex = pdbRecords.Length - 2;
+            if (lastImageIndex > nextToLastIndex)
+            {
+                lastImageIndex = (ushort)nextToLastIndex;
+            }
+
             _allRecords = new List<PageRecord>();
             for (var index = firstImageIndex; index < lastImageIndex; index++)
             {
